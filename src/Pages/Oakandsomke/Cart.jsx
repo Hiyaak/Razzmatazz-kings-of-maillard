@@ -7,7 +7,7 @@ import {
   Minus,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import heroImage from "../../assets/concept.jpeg";
+import heroImage from "../../assets/concept.jpg";
 
 const ShoppingCart = () => {
   const navigate = useNavigate();
