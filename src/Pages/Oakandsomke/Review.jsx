@@ -114,7 +114,7 @@
 import React from "react";
 import { ArrowLeft, Star, ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import heroImage from "../../assets/concept.jpeg";
+import heroImage from "../../assets/concept.jpg";
 
 const Review = () => {
   const navigate = useNavigate();

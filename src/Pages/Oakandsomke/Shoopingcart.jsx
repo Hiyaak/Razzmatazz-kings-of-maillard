@@ -1,7 +1,7 @@
 import React from "react";
 import { ArrowLeft, ShoppingCart, Plus, Minus, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import heroImage from "../../assets/concept.jpeg";
+import heroImage from "../../assets/concept.jpg";
 
 const ShoppingCartPage = () => {
   const navigate = useNavigate();
