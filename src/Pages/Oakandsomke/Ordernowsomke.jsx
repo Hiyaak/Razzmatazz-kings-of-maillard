@@ -17,6 +17,7 @@ import ApiService, { ImagePath } from '../../Services/Apiservice'
 const FoodDeliveryApp = () => {
   const [productCategories, setproductCategories] = useState([])
   const [selectedTab, setSelectedTab] = useState('Delivery')
+  const [brandId, setBrandId] = useState(null)
   const navigate = useNavigate()
 
   const getProductCategories = async () => {
@@ -26,10 +27,19 @@ const FoodDeliveryApp = () => {
       )
       if (data.status) {
         setproductCategories(data.products)
-        console.log('products:', data.products)
+
+        if (data.products.length > 0) {
+          const brandIdFromApi = data.products[0].brand_id
+          setBrandId(brandIdFromApi)
+
+          // ✅ also persist to localStorage
+          localStorage.setItem('brandId', brandIdFromApi)
+        }
+
+        console.log('brand products:', data.products)
       }
     } catch (error) {
-      console.log('error ')
+      console.log('error ', error)
     }
   }
 
@@ -37,8 +47,10 @@ const FoodDeliveryApp = () => {
     getProductCategories()
   }, [])
 
-  const handleProduct = name => {
-    navigate(`/subproduct/${encodeURIComponent(name)}`)
+  const handleProduct = (productId, productName) => {
+    navigate(
+      `/subproduct/${encodeURIComponent(productName)}?productId=${productId}`
+    )
   }
 
   const handleMenuClick = () => {
@@ -147,7 +159,7 @@ const FoodDeliveryApp = () => {
                 <div
                   key={item._id}
                   className='relative rounded-lg overflow-hidden shadow group'
-                  onClick={() => handleProduct(item.productName)}
+                  onClick={() => handleProduct(item._id, item.productName)}
                 >
                   <img
                     src={`${ImagePath}${item.product_img[0]}`}
@@ -231,7 +243,7 @@ const FoodDeliveryApp = () => {
             <div className='flex items-center justify-center w-8 h-8 bg-red-100 rounded-full'>
               <Leaf className='w-4 h-4 text-red-600' />
             </div>
-            <div className='font-bold text-xl text-red-600'>Kings of Maillard</div>
+            <div className='font-bold text-xl text-red-600'>King of Maillard</div>
           </div>
           <div className='flex items-center space-x-2'>
             <button onClick={handleshoopingcartClick} className='p-2'>
@@ -326,14 +338,14 @@ const FoodDeliveryApp = () => {
             <div
               key={item._id}
               className='relative rounded-lg overflow-hidden shadow group'
-               onClick={() => handleProduct(item.productName)}
+              onClick={() => handleProduct(item._id, item.productName)}
             >
               <img
                 src={`${ImagePath}${item.product_img[0]}`}
                 alt={item.productName}
-                className='w-full h-36 object-cover'
+                className='w-full h-56 object-cover'
               />
-              <div className='absolute inset-0 bg-black/40 flex items-center justify-center'>
+              <div className='absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition'>
                 <h3 className='text-white font-bold text-lg text-center'>
                   {item.productName}
                 </h3>
