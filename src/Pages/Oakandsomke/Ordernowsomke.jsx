@@ -20,13 +20,27 @@ const FoodDeliveryApp = () => {
   const [brandId, setBrandId] = useState(null);
   const navigate = useNavigate();
 
-  const { selectedMethod, selectedGovernate, selectedArea } = JSON.parse(
-    localStorage.getItem('selectedLocation') || '{}'
-  );
+  const {
+    selectedMethod,
+    selectedGovernate,
+    selectedGovernateId,
+    selectedArea,
+    selectedAreaId,
+  } = JSON.parse(localStorage.getItem('selectedLocation') || '{}');
+
+  console.log('Full selectedLocation:', {
+    selectedMethod,
+    selectedGovernate,
+    selectedGovernateId,
+    selectedArea,
+    selectedAreaId,
+  });
 
   const getProductCategories = async () => {
     try {
-      const { data } = await ApiService.get(`getAllProductByBrandName/Kings of Maillard`);
+      const { data } = await ApiService.get(
+        `getAllProductByBrandName/Kings of Maillard`
+      );
       if (data.status) {
         setproductCategories(data.products);
 
@@ -34,11 +48,10 @@ const FoodDeliveryApp = () => {
           const brandIdFromApi = data.products[0].brand_id;
           setBrandId(brandIdFromApi);
 
-          // ✅ also persist to localStorage
           localStorage.setItem('brandId', brandIdFromApi);
         }
 
-        console.log('brand products:', data.products);
+        // console.log('brand products:', data.products)
       }
     } catch (error) {
       console.log('error ', error);
@@ -90,7 +103,9 @@ const FoodDeliveryApp = () => {
 
               {/* Brand text */}
               <div>
-                <h1 className="text-x2 font-bold text-gray-900">Kings of Maillard</h1>
+                <h1 className="text-x2 font-bold text-gray-900">
+                 Kings of Maillard
+                </h1>
                 <p className="text-sm text-gray-600 mt-1">
                   Smoke Meat Everyday
                 </p>
@@ -148,7 +163,10 @@ const FoodDeliveryApp = () => {
                   </p>
                 </div>
               </div>
-              <button className="text-red-500 font-medium hover:text-red-600">
+              <button
+                onClick={() => navigate('/pickupdeviler')}
+                className="text-red-500 font-medium hover:text-red-600"
+              >
                 Edit
               </button>
             </div>
@@ -257,7 +275,7 @@ const FoodDeliveryApp = () => {
             <div className="flex items-center justify-center w-8 h-8 bg-red-100 rounded-full">
               <Leaf className="w-4 h-4 text-red-600" />
             </div>
-            <div className="font-bold text-xl text-red-600">Kings of Maillard </div>
+            <div className="font-bold text-xl text-red-600">Kings of Maillard</div>
           </div>
           <div className="flex items-center space-x-2">
             <button onClick={handleshoopingcartClick} className="p-2">
