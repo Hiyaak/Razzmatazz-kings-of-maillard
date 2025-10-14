@@ -6,11 +6,13 @@ import {
   Clock,
   Menu,
   ShoppingBag,
-  Search
+  Search,
+  LogOut
 } from 'lucide-react'
 import heroImage from '../../assets/concept.jpg'
 import { useNavigate } from 'react-router-dom'
 import ApiService from '../../Services/Apiservice'
+import { toast } from 'react-toastify'
 
 const ContactInfoForm = () => {
   const [showGuestForm, setShowGuestForm] = useState(false)
@@ -43,12 +45,12 @@ const ContactInfoForm = () => {
       const { data } = await ApiService.post('guestUser', payload)
       if (data.status) {
         localStorage.setItem('guestUserId', data.user._id)
-        alert('Guest login successful ')
+        toast.success('Guest login successful!')
         navigate('/shoopingcart')
       } else {
       }
     } catch (error) {
-      console.log('error ', error)
+      toast.error('Something went wrong during login. Please try again.')
     }
   }
 
@@ -65,6 +67,13 @@ const ContactInfoForm = () => {
 
   const handleshoopingcartClick = () => {
     navigate('/shoopingcart')
+  }
+  const handleLogout = () => {
+    localStorage.removeItem('guestUserId')
+    localStorage.removeItem('registredUserId')
+    localStorage.removeItem('selectedLocation')
+
+    navigate('/')
   }
 
   return (
@@ -290,8 +299,11 @@ const ContactInfoForm = () => {
               <button className='w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-opacity-30 transition-all'>
                 <Search className='w-6 h-6' />
               </button>
-              <button className='w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-opacity-30 transition-all'>
-                <User className='w-6 h-6' />
+              <button
+                onClick={handleLogout}
+                className='w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-opacity-30 transition-all'
+              >
+                <LogOut className='w-6 h-6' />
               </button>
             </div>
           </div>
@@ -306,7 +318,7 @@ const ContactInfoForm = () => {
           />
 
           {/* Bottom IG button */}
-          <div className='absolute bottom-8 left-8 z-20'>
+          <div className='absolute top-1/2 right-0 z-20 transform -translate-y-1/2'>
             <div className='w-12 h-12 bg-gradient-to-br from-purple-500 via-pink-500 to-orange-500 rounded-lg flex items-center justify-center text-white font-bold text-sm'>
               IG
             </div>

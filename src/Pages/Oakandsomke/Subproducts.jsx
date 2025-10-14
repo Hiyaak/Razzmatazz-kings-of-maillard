@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import heroImage from '../../assets/concept.jpg'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
-import { Menu, ShoppingBag, Search, User, ArrowLeft } from 'lucide-react'
+import { Menu, ShoppingBag, Search, ArrowLeft, LogOut } from 'lucide-react'
 import ApiService, { ImagePath } from '../../Services/Apiservice'
 import { useCart } from '../../Context/CartContext'
 
@@ -59,6 +59,13 @@ const Subproducts = () => {
   const handeleSearch = () => {
     navigate('/search')
   }
+  const handleLogout = () => {
+    localStorage.removeItem('guestUserId')
+    localStorage.removeItem('registredUserId')
+    localStorage.removeItem('selectedLocation')
+
+    navigate('/') 
+  }
 
   return (
     <div className='flex flex-col md:flex-row min-h-screen'>
@@ -75,7 +82,7 @@ const Subproducts = () => {
             </button>
 
             <h1 className='text-2xl font-semibold text-gray-900 text-center flex-1'>
-              {decodeURIComponent(name)}
+              {decodeURIComponent(name).toUpperCase()}
             </h1>
 
             <div className='w-9' />
@@ -108,7 +115,7 @@ const Subproducts = () => {
                   </div>
 
                   {/* Description */}
-                  <p className='text-gray-600 text-sm mb-3'>
+                  <p className='text-gray-600 text-sm mb-3 line-clamp-2'>
                     {item.description}
                   </p>
 
@@ -143,31 +150,47 @@ const Subproducts = () => {
           </div>
         </div>
 
-        {/* Review Order - Fixed at Bottom */}
-        <div
-          className='p-3 border-t border-gray-200 bg-white flex-shrink-0'
-          onClick={handleReviewOrder}
-        >
-          <button className='w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-lg transition-colors flex items-center justify-between px-6'>
-            {/* Left - Items Count */}
-            <div className='flex items-center'>
-              <span className='bg-white/20 rounded-sm w-6 h-6 flex items-center justify-center text-sm'>
-                {cart.length}
+        {/* Bottom Section */}
+        {!(selectedMethod && (selectedArea || selectedGovernate)) ? (
+          // ❌ Location not selected — show "Select your location"
+          <div className='p-3 border-t border-gray-200 bg-white flex-shrink-0'>
+            <button
+              onClick={() => navigate('/pickupdeviler')}
+              className='w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-lg transition-colors'
+            >
+              Select your location
+            </button>
+          </div>
+        ) : (
+          // Location selected — show "Review Order"
+          <div
+            className='p-3 border-t border-gray-200 bg-white flex-shrink-0'
+            onClick={handleReviewOrder}
+          >
+            <button className='w-full bg-[#FA0303] hover:bg-[#AF0202] text-white font-bold py-3 rounded-lg transition-colors flex items-center justify-between px-6'>
+              {/* Left - Items Count */}
+              <div className='flex items-center'>
+                <span className='bg-white/20 rounded-sm w-6 h-6 flex items-center justify-center text-sm'>
+                  {cart.length}
+                </span>
+              </div>
+
+              {/* Center - Review Order Text */}
+              <span>Review Order</span>
+
+              {/* Right - Total Price */}
+              <span>
+                {cart
+                  .reduce(
+                    (total, item) => total + item.price * item.quantity,
+                    0
+                  )
+                  .toFixed(3)}{' '}
+                KD
               </span>
-            </div>
-
-            {/* Center - Review Order Text */}
-            <span>Review Order</span>
-
-            {/* Right - Total Price */}
-            <span>
-              {cart
-                .reduce((total, item) => total + item.price * item.quantity, 0)
-                .toFixed(3)}{' '}
-              KD
-            </span>
-          </button>
-        </div>
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Right Panel - Fixed, No Scroll */}
@@ -191,8 +214,11 @@ const Subproducts = () => {
               <button className='w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-opacity-30 transition-all'>
                 <Search onClick={handeleSearch} className='w-6 h-6' />
               </button>
-              <button className='w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-opacity-30 transition-all'>
-                <User className='w-6 h-6' />
+              <button
+                onClick={handleLogout}
+                className='w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-opacity-30 transition-all'
+              >
+                <LogOut className='w-6 h-6' />
               </button>
             </div>
           </div>
@@ -207,7 +233,7 @@ const Subproducts = () => {
           />
 
           {/* Bottom IG button */}
-          <div className='absolute bottom-8 left-8 z-20'>
+          <div className='absolute top-1/2 right-0 z-20 transform -translate-y-1/2'>
             <div className='w-12 h-12 bg-gradient-to-br from-purple-500 via-pink-500 to-orange-500 rounded-lg flex items-center justify-center text-white font-bold text-sm'>
               IG
             </div>
