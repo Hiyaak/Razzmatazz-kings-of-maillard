@@ -3,7 +3,8 @@ import {
   ShoppingBag,
   User,
   ArrowLeft,
-  Search as SearchIcon
+  Search as SearchIcon,
+  LogOut
 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import heroImage from '../../assets/concept.jpg'
@@ -59,6 +60,13 @@ const Search = () => {
 
   const handleMenuClick = () => navigate('/menu')
   const handleShoppingCartClick = () => navigate('/shoopingcart')
+  const handleLogout = () => {
+    localStorage.removeItem('guestUserId')
+    localStorage.removeItem('registredUserId')
+    localStorage.removeItem('selectedLocation')
+
+    navigate('/')
+  }
 
   return (
     <div className='flex flex-col md:flex-row min-h-screen'>
@@ -194,11 +202,19 @@ const Search = () => {
               <button className='w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-opacity-30 transition-all'>
                 <SearchIcon className='w-6 h-6' />
               </button>
-              <button className='w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-opacity-30 transition-all'>
-                <User className='w-6 h-6' />
+              <button
+                onClick={handleLogout}
+                className='w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-opacity-30 transition-all'
+              >
+                <LogOut className='w-6 h-6' />
               </button>
             </div>
           </div>
+        </div>
+      </div>
+      <div className='absolute top-1/2 right-0 z-20 transform -translate-y-1/2'>
+        <div className='w-12 h-12 bg-gradient-to-br from-purple-500 via-pink-500 to-orange-500 rounded-lg flex items-center justify-center text-white font-bold text-sm'>
+          IG
         </div>
       </div>
     </div>
