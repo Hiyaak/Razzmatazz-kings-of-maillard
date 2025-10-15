@@ -44,7 +44,7 @@ const ContactInfoForm = () => {
       }
       const { data } = await ApiService.post('guestUser', payload)
       if (data.status) {
-        localStorage.setItem('guestUserId', data.user._id)
+        sessionStorage.setItem(`guestUserId_${storedBrandId}`, data.user._id)
         toast.success('Guest login successful!')
         navigate('/shoopingcart')
       } else {
@@ -68,11 +68,11 @@ const ContactInfoForm = () => {
   const handleshoopingcartClick = () => {
     navigate('/shoopingcart')
   }
+
   const handleLogout = () => {
     localStorage.removeItem('guestUserId')
     localStorage.removeItem('registredUserId')
-    localStorage.removeItem('selectedLocation')
-
+    localStorage.removeItem(`selectedLocation_${brandId}`)
     navigate('/')
   }
 
