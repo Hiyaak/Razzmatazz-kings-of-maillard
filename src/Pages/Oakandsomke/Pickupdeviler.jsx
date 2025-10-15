@@ -126,10 +126,26 @@ const HeroSection = () => {
     setExpandedGovernateId(null)
   }
 
+  // const handleStartOrdering = () => {
+  //   if (selectedArea || selectedGovernate) {
+  //     localStorage.setItem(
+  //       'selectedLocation',
+  //       JSON.stringify({
+  //         selectedMethod,
+  //         selectedGovernate,
+  //         selectedGovernateId,
+  //         selectedArea,
+  //         selectedAreaId
+  //       })
+  //     )
+  //     navigate('/')
+  //   }
+  // }
+
   const handleStartOrdering = () => {
     if (selectedArea || selectedGovernate) {
       localStorage.setItem(
-        'selectedLocation',
+        `selectedLocation_${brandId}`,
         JSON.stringify({
           selectedMethod,
           selectedGovernate,

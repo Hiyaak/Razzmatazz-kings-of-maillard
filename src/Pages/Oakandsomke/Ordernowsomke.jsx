@@ -19,24 +19,9 @@ import ApiService, { ImagePath } from '../../Services/Apiservice'
 const FoodDeliveryApp = () => {
   const [productCategories, setproductCategories] = useState([])
   const [selectedTab, setSelectedTab] = useState('Delivery')
+  const [selectedLocation, setSelectedLocation] = useState({})
   const [brandId, setBrandId] = useState(null)
   const navigate = useNavigate()
-
-  const {
-    selectedMethod,
-    selectedGovernate,
-    selectedGovernateId,
-    selectedArea,
-    selectedAreaId
-  } = JSON.parse(localStorage.getItem('selectedLocation') || '{}')
-
-  console.log('Full selectedLocation:', {
-    selectedMethod,
-    selectedGovernate,
-    selectedGovernateId,
-    selectedArea,
-    selectedAreaId
-  })
 
   const getProductCategories = async () => {
     try {
@@ -49,20 +34,46 @@ const FoodDeliveryApp = () => {
         if (data.products.length > 0) {
           const brandIdFromApi = data.products[0].brand_id
           setBrandId(brandIdFromApi)
-
           localStorage.setItem('brandId', brandIdFromApi)
         }
-
-        // console.log('brand products:', data.products)
       }
     } catch (error) {
-      console.log('error ', error)
+      console.error('Error fetching product categories:', error)
     }
   }
 
   useEffect(() => {
+    if (brandId) {
+      const locationData = localStorage.getItem(`selectedLocation_${brandId}`)
+      if (locationData) {
+        try {
+          setSelectedLocation(JSON.parse(locationData))
+        } catch (err) {
+          console.error('Invalid JSON in location storage:', err)
+        }
+      }
+    }
+  }, [brandId])
+
+  useEffect(() => {
     getProductCategories()
   }, [])
+
+  const {
+    selectedMethod,
+    selectedGovernate,
+    selectedGovernateId,
+    selectedArea,
+    selectedAreaId
+  } = selectedLocation || {}
+
+  console.log('Full selectedLocation:', {
+    selectedMethod,
+    selectedGovernate,
+    selectedGovernateId,
+    selectedArea,
+    selectedAreaId
+  })
 
   const handleProduct = (productId, productName) => {
     navigate(
@@ -85,7 +96,7 @@ const FoodDeliveryApp = () => {
   const handleLogout = () => {
     localStorage.removeItem('guestUserId')
     localStorage.removeItem('registredUserId')
-    localStorage.removeItem('selectedLocation')
+    localStorage.removeItem(`selectedLocation_${brandId}`)
 
     navigate('/')
   }
@@ -308,7 +319,9 @@ const FoodDeliveryApp = () => {
               <div className='flex items-center justify-center w-8 h-8 bg-red-100 rounded-full'>
                 <Leaf className='w-4 h-4 text-red-600' />
               </div>
-              <div className='font-bold text-xl text-red-600'>Kings of Maillard</div>
+              <div className='font-bold text-xl text-red-600'>
+                Kings of Maillard
+              </div>
             </div>
             <div className='flex items-center space-x-2'>
               <button onClick={handleshoopingcartClick} className='p-2'>
@@ -459,3 +472,23 @@ const FoodDeliveryApp = () => {
 }
 
 export default FoodDeliveryApp
+
+// const getProductCategories = async () => {
+//   try {
+//     const { data } = await ApiService.get(
+//       `getAllProductByBrandName/Kings of Maillard`
+//     )
+//     if (data.status) {
+//       setproductCategories(data.products)
+
+//       if (data.products.length > 0) {
+//         const brandIdFromApi = data.products[0].brand_id
+//         setBrandId(brandIdFromApi)
+
+//         localStorage.setItem('brandId', brandIdFromApi)
+//       }
+//     }
+//   } catch (error) {
+//     console.log('error ', error)
+//   }
+// }
