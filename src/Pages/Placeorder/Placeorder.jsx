@@ -1,52 +1,35 @@
 import { useNavigate } from 'react-router-dom'
-import heroImage from '../../assets/concept.jpg'
-import {
-  ArrowLeft,
-  Menu,
-  Search,
-  User,
-  ShoppingBag,
-  LogOut
-} from 'lucide-react'
-
+import { ArrowLeft, Menu } from 'lucide-react'
 import { useCart } from '../../Context/CartContext'
 import ApiService from '../../Services/Apiservice'
 import { toast } from 'react-toastify'
+import RightPanelLayout from '../../Layout/RightPanelLayout'
 
 const Placeorder = () => {
   const navigate = useNavigate()
   const { cart } = useCart()
 
-  const handleMenuClick = () => {
-    navigate('/menu')
-  }
-
-  const handleshoopingcartClick = () => {
-    navigate('/shoopingcart')
-  }
-
-  const handeleSearch = () => {
-    navigate('/search')
-  }
-
-  const handleLogout = () => {
-    localStorage.removeItem('guestUserId')
-    localStorage.removeItem('registredUserId')
-    localStorage.removeItem('selectedLocation')
-
-    navigate('/') // if using react-router
-  }
-
   const handlePlaceOrder = async () => {
     try {
-      // Get user ID (guest or registered)
-      const userId =
-        localStorage.getItem('guestUserId') ||
-        localStorage.getItem('registredUserId')
+      const storedBrandId = localStorage.getItem('brandId')
+      if (!storedBrandId) return toast.error('No brand selected')
 
-      // Get location details from localStorage
+      // Get user ID for this brand
+      const userId =
+        sessionStorage.getItem(`guestUserId_${storedBrandId}`) ||
+        localStorage.getItem(`registredUserId_${storedBrandId}`)
+
+      if (!userId) return toast.error('Please login or continue as guest')
+
+      // Get location for this brand
+      const locationData = JSON.parse(
+        localStorage.getItem(`selectedLocation_${storedBrandId}`) || '{}'
+      )
       const { selectedMethod, selectedGovernateId, selectedAreaId } =
-        JSON.parse(localStorage.getItem('selectedLocation') || '{}')
+        locationData
+
+      if (!selectedMethod || !selectedGovernateId || !selectedAreaId)
+        return toast.error('Please select your location')
 
       // Build payload
       const payload = {
@@ -59,10 +42,9 @@ const Placeorder = () => {
           quantity: item.quantity,
           description: item.description || ''
         })),
-
-        deliveryType: selectedMethod || '',
-        governateId: selectedGovernateId || '',
-        areaId: selectedAreaId || ''
+        deliveryType: selectedMethod,
+        governateId: selectedGovernateId,
+        areaId: selectedAreaId
       }
 
       const { data } = await ApiService.post('placeOrder', payload)
@@ -75,6 +57,7 @@ const Placeorder = () => {
         toast.error('Failed to place order. Please try again.')
       }
     } catch (error) {
+      console.error('Place order error:', error)
       toast.error('Something went wrong while placing your order.')
     }
   }
@@ -150,52 +133,7 @@ const Placeorder = () => {
       </div>
 
       {/* Right Panel */}
-      <div className='flex-1 relative bg-black'>
-        {/* Top Navigation — hidden on mobile */}
-        <div className='hidden md:absolute md:top-6 md:left-6 md:right-6 md:z-10 md:block'>
-          <div className='flex justify-between items-center'>
-            <div className='flex space-x-4'>
-              <button
-                onClick={handleMenuClick}
-                className='w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-opacity-30 transition-all'
-              >
-                <Menu className='w-6 h-6' />
-              </button>
-              <button
-                onClick={handleshoopingcartClick}
-                className='w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-opacity-30 transition-all'
-              >
-                <ShoppingBag className='w-6 h-6' />
-              </button>
-              <button className='w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-opacity-30 transition-all'>
-                <Search onClick={handeleSearch} className='w-6 h-6' />
-              </button>
-              <button
-                onClick={handleLogout}
-                className='w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-opacity-30 transition-all'
-              >
-                <LogOut className='w-6 h-6' />
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Hero Section — hidden on mobile */}
-        <div className='hidden md:block relative h-screen'>
-          <img
-            src={heroImage}
-            alt='Hero Food'
-            className='w-full h-full object-cover'
-          />
-
-          {/* Bottom IG button */}
-          <div className='absolute top-1/2 right-0 z-20 transform -translate-y-1/2'>
-            <div className='w-12 h-12 bg-gradient-to-br from-purple-500 via-pink-500 to-orange-500 rounded-lg flex items-center justify-center text-white font-bold text-sm'>
-              IG
-            </div>
-          </div>
-        </div>
-      </div>
+      <RightPanelLayout />
     </div>
   )
 }

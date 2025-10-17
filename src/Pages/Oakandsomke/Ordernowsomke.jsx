@@ -15,28 +15,15 @@ import heroImage from '../../assets/concept.jpg'
 
 import oak from '../../assets/kingsofmallard.png'
 import ApiService, { ImagePath } from '../../Services/Apiservice'
+import RightPanelLayout from '../../Layout/RightPanelLayout'
+import { LuBike } from 'react-icons/lu'
 
 const FoodDeliveryApp = () => {
   const [productCategories, setproductCategories] = useState([])
   const [selectedTab, setSelectedTab] = useState('Delivery')
   const [brandId, setBrandId] = useState(null)
+  const [selectedLocation, setSelectedLocation] = useState({})
   const navigate = useNavigate()
-
-  const {
-    selectedMethod,
-    selectedGovernate,
-    selectedGovernateId,
-    selectedArea,
-    selectedAreaId
-  } = JSON.parse(localStorage.getItem('selectedLocation') || '{}')
-
-  console.log('Full selectedLocation:', {
-    selectedMethod,
-    selectedGovernate,
-    selectedGovernateId,
-    selectedArea,
-    selectedAreaId
-  })
 
   const getProductCategories = async () => {
     try {
@@ -49,20 +36,46 @@ const FoodDeliveryApp = () => {
         if (data.products.length > 0) {
           const brandIdFromApi = data.products[0].brand_id
           setBrandId(brandIdFromApi)
-
           localStorage.setItem('brandId', brandIdFromApi)
         }
-
-        // console.log('brand products:', data.products)
       }
     } catch (error) {
-      console.log('error ', error)
+      console.error('Error fetching product categories:', error)
     }
   }
 
   useEffect(() => {
+    if (brandId) {
+      const locationData = localStorage.getItem(`selectedLocation_${brandId}`)
+      if (locationData) {
+        try {
+          setSelectedLocation(JSON.parse(locationData))
+        } catch (err) {
+          console.error('Invalid JSON in location storage:', err)
+        }
+      }
+    }
+  }, [brandId])
+
+  useEffect(() => {
     getProductCategories()
   }, [])
+
+  const {
+    selectedMethod,
+    selectedGovernate,
+    selectedGovernateId,
+    selectedArea,
+    selectedAreaId
+  } = selectedLocation || {}
+
+  console.log('Full selectedLocation:', {
+    selectedMethod,
+    selectedGovernate,
+    selectedGovernateId,
+    selectedArea,
+    selectedAreaId
+  })
 
   const handleProduct = (productId, productName) => {
     navigate(
@@ -80,14 +93,6 @@ const FoodDeliveryApp = () => {
 
   const handeleSearch = () => {
     navigate('/search')
-  }
-
-  const handleLogout = () => {
-    localStorage.removeItem('guestUserId')
-    localStorage.removeItem('registredUserId')
-    localStorage.removeItem('selectedLocation')
-
-    navigate('/')
   }
 
   const handleBrandClick = () => {
@@ -110,7 +115,7 @@ const FoodDeliveryApp = () => {
               onClick={handleBrandClick}
               className='cursor-pointer transition-colors border-b border-gray-200'
             >
-              <div className='flex items-center justify-between px-6 py-4'>
+              <div className='flex items-center justify-between px-6 py-4 hover:bg-gray-100'>
                 {/* Left side - logo and text */}
                 <div className='flex items-center space-x-3'>
                   <img
@@ -168,8 +173,8 @@ const FoodDeliveryApp = () => {
             {/* Location and Time Section */}
             <div className='px-4 pb-4 space-y-4 mt-2 border-b border-gray-200'>
               <div className='flex items-center justify-between'>
-                <div className='flex items-center gap-3'>
-                  <MapPin className='w-5 h-5 text-gray-400' />
+                <div className='flex items-center gap-10 pl-4'>
+                  <LuBike className='w-5 h-5 text-gray-400' />
                   <p className='text-sm text-gray-600'>
                     {selectedMethod === 'delivery'
                       ? 'Deliver to'
@@ -202,7 +207,7 @@ const FoodDeliveryApp = () => {
               </div>
 
               <div className='flex items-center justify-between'>
-                <div className='flex items-center gap-3'>
+                <div className='flex items-center gap-10 pl-4'>
                   <Clock className='w-5 h-5 text-gray-400' />
                   <p className='text-sm text-gray-600'>Earliest arrival</p>
                 </div>
@@ -234,10 +239,10 @@ const FoodDeliveryApp = () => {
 
           {/* Fixed Button at Bottom */}
           {!(selectedMethod && (selectedArea || selectedGovernate)) && (
-            <div className='p-3 border-t border-gray-200 bg-white flex-shrink-0'>
+            <div className='p-2 border-t border-gray-200 bg-white flex-shrink-0'>
               <button
                 onClick={() => navigate('/pickupdeviler')}
-                className='w-full bg-[#FA0303] hover:bg-[#AF0202] text-white font-bold py-3 rounded-lg transition-colors'
+                className='w-full bg-[#FA0303] hover:bg-[#AF0202] text-white py-3 rounded-lg transition-colors'
               >
                 Select your location
               </button>
@@ -246,49 +251,7 @@ const FoodDeliveryApp = () => {
         </div>
 
         {/* Right Panel - 60% - No Scroll */}
-        <div className='flex-1 relative bg-black'>
-          {/* Top Navigation */}
-          <div className='absolute top-6 left-6 right-6 z-10'>
-            <div className='flex justify-between items-center'>
-              <div className='flex space-x-4'>
-                <button
-                  onClick={handleMenuClick}
-                  className='w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-opacity-30 transition-all'
-                >
-                  <Menu className='w-6 h-6' />
-                </button>
-                <button
-                  onClick={handleshoopingcartClick}
-                  className='w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-opacity-30 transition-all'
-                >
-                  <ShoppingBag className='w-6 h-6' />
-                </button>
-                <button className='w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-opacity-30 transition-all'>
-                  <Search onClick={handeleSearch} className='w-6 h-6' />
-                </button>
-                <button
-                  onClick={handleLogout}
-                  className='w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-opacity-30 transition-all'
-                >
-                  <LogOut className='w-6 h-6' />
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Hero Banner Image */}
-          <img
-            src={heroImage}
-            alt='Hero Food'
-            className='w-full h-full object-cover'
-          />
-
-          <div className='absolute top-1/2 right-0 z-20 transform -translate-y-1/2'>
-            <div className='w-12 h-12 bg-gradient-to-br from-purple-500 via-pink-500 to-orange-500 rounded-lg flex items-center justify-center text-white font-bold text-sm'>
-              IG
-            </div>
-          </div>
-        </div>
+        <RightPanelLayout />
       </div>
 
       {/* Mobile layout (below md) */}
