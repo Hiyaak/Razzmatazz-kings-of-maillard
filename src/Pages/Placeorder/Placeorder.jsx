@@ -87,7 +87,7 @@ const Placeorder = () => {
           </div>
 
           {cart.length === 0 ? (
-            <p className='text-gray-500 text-center py-4'>No items in cart1</p>
+            <p className='text-gray-500 text-center py-4'>No items in cart441</p>
           ) : (
             cart.map(item => (
               <div
