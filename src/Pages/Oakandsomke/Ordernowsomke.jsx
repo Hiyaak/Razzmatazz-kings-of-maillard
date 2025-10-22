@@ -21,6 +21,7 @@ import { LuBike } from 'react-icons/lu'
 const FoodDeliveryApp = () => {
   const [productCategories, setproductCategories] = useState([])
   const [selectedTab, setSelectedTab] = useState('Delivery')
+  const [selectedLocation, setSelectedLocation] = useState({})
   const [brandId, setBrandId] = useState(null)
   const [selectedLocation, setSelectedLocation] = useState({})
   const navigate = useNavigate()
@@ -93,6 +94,14 @@ const FoodDeliveryApp = () => {
 
   const handeleSearch = () => {
     navigate('/search')
+  }
+
+  const handleLogout = () => {
+    localStorage.removeItem('guestUserId')
+    localStorage.removeItem('registredUserId')
+    localStorage.removeItem('selectedLocation')
+
+    navigate('/')
   }
 
   const handleBrandClick = () => {
@@ -271,7 +280,9 @@ const FoodDeliveryApp = () => {
               <div className='flex items-center justify-center w-8 h-8 bg-red-100 rounded-full'>
                 <Leaf className='w-4 h-4 text-red-600' />
               </div>
-              <div className='font-bold text-xl text-red-600'>Kings of Maillard</div>
+              <div className='font-bold text-xl text-red-600'>
+                Kings of Maillard
+              </div>
             </div>
             <div className='flex items-center space-x-2'>
               <button onClick={handleshoopingcartClick} className='p-2'>
@@ -422,3 +433,23 @@ const FoodDeliveryApp = () => {
 }
 
 export default FoodDeliveryApp
+
+// const getProductCategories = async () => {
+//   try {
+//     const { data } = await ApiService.get(
+//       `getAllProductByBrandName/Kings of Maillard`
+//     )
+//     if (data.status) {
+//       setproductCategories(data.products)
+
+//       if (data.products.length > 0) {
+//         const brandIdFromApi = data.products[0].brand_id
+//         setBrandId(brandIdFromApi)
+
+//         localStorage.setItem('brandId', brandIdFromApi)
+//       }
+//     }
+//   } catch (error) {
+//     console.log('error ', error)
+//   }
+// }
