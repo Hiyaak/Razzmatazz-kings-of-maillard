@@ -13,6 +13,7 @@ import ApiService from '../../Services/Apiservice'
 
 const Adress = () => {
   const [selectedType, setSelectedType] = useState('Home')
+  const [locationData, setLocationData] = useState(null)
   const [formData, setFormData] = useState({
     Block: '',
     Street: '',
@@ -33,9 +34,16 @@ const Adress = () => {
   )
   const guestUserId = sessionStorage.getItem(`guestUserId_${storedBrandId}`)
 
-  const userId = registredUserId || guestUserId
+  // Get location for this brand
+  useEffect(() => {
+    const storedData = JSON.parse(
+      localStorage.getItem(`selectedLocation_${storedBrandId}`) || '{}'
+    )
+    console.log('Selected Location Data:', storedData)
+    setLocationData(storedData)
+  }, [storedBrandId])
 
-  console.log('Fetched userId:', userId)
+  const userId = registredUserId || guestUserId
 
   const handleChange = e => {
     const { name, value } = e.target
@@ -117,15 +125,72 @@ const Adress = () => {
             </div>
             <div className='bg-white p-5 border-gray-300'>
               <div className='flex justify-center gap-24'>
-                <button className='flex items-center gap-3 px-6 py-2 rounded-sm font-medium transition-all duration-200 bg-white text-[#FA0303] border border-[#FA0303] hover:bg-red-50'>
+                {/* Delivery */}
+                <button
+                  className={`flex items-center gap-3 px-6 py-2 rounded-sm font-medium transition-all duration-200 border ${
+                    locationData?.selectedMethod?.toLowerCase() === 'delivery'
+                      ? 'bg-[#FA0303] text-white border-[#FA0303]'
+                      : 'bg-white text-[#FA0303] border-[#FA0303] hover:bg-red-50'
+                  }`}
+                >
                   <FaCarSide className='w-5 h-5' />
                   Delivery
                 </button>
-                <button className='flex items-center gap-3 px-6 py-2 rounded-sm font-medium transition-all duration-200 bg-white text-[#FA0303] border border-[#FA0303] hover:bg-red-50'>
+
+                {/* Pickup */}
+                <button
+                  className={`flex items-center gap-3 px-6 py-2 rounded-sm font-medium transition-all duration-200 border ${
+                    locationData?.selectedMethod?.toLowerCase() === 'pickup'
+                      ? 'bg-[#FA0303] text-white border-[#FA0303]'
+                      : 'bg-white text-[#FA0303] border-[#FA0303] hover:bg-red-50'
+                  }`}
+                >
                   <FaWalking className='w-5 h-5' />
                   Pickup
                 </button>
               </div>
+            </div>
+          </div>
+
+          {/* Delivery Area & Location */}
+          <div>
+            <div className='bg-gray-100 p-4 border-b'>
+              <h2 className='text-base font-semibold text-gray-800'>
+                Delivery Area & Location
+              </h2>
+            </div>
+
+            <div className='bg-white p-4 border-gray-300'>
+              {locationData ? (
+                <div className='flex items-center justify-between'>
+                  {/* Left side - selected info */}
+                  <div>
+                    <p className='text-sm font-semibold'>
+                      {locationData?.selectedArea
+                        ? `${locationData.selectedArea}`
+                        : 'No area selected'}
+                    </p>
+                  </div>
+
+                  {/* Right side - Change button */}
+                  <button
+                    onClick={() => navigate('/pickupdeviler')}
+                    className='text-[#FA0303] text-sm font-medium  hover:text-red-700'
+                  >
+                    Change
+                  </button>
+                </div>
+              ) : (
+                <div className='text-center text-gray-500'>
+                  <p>No delivery location selected.</p>
+                  <button
+                    onClick={() => navigate('/pickupdeviler')}
+                    className='mt-2 text-[#FA0303] font-medium text-sm underline hover:text-red-700'
+                  >
+                    Select Location
+                  </button>
+                </div>
+              )}
             </div>
           </div>
 
