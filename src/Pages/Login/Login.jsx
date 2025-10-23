@@ -68,7 +68,6 @@ const ContactInfoForm = () => {
   const handleshoopingcartClick = () => {
     navigate('/shoopingcart')
   }
-
   const handleLogout = () => {
     localStorage.removeItem('guestUserId')
     localStorage.removeItem('registredUserId')

@@ -176,22 +176,6 @@ const HeroSection = () => {
     })
   }
 
-  // const handleStartOrdering = () => {
-  //   if (selectedArea || selectedGovernate) {
-  //     localStorage.setItem(
-  //       'selectedLocation',
-  //       JSON.stringify({
-  //         selectedMethod,
-  //         selectedGovernate,
-  //         selectedGovernateId,
-  //         selectedArea,
-  //         selectedAreaId
-  //       })
-  //     )
-  //     navigate('/')
-  //   }
-  // }
-
   const handleStartOrdering = () => {
     if (selectedArea || selectedGovernate) {
       localStorage.setItem(
