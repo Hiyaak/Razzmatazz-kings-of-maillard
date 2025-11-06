@@ -1,18 +1,11 @@
 import { useState } from 'react'
-import {
-  ArrowLeft,
-  Building2,
-  User,
-  Clock,
-  Menu,
-  ShoppingBag,
-  Search,
-  LogOut
-} from 'lucide-react'
-import heroImage from '../../assets/concept.jpg'
+import { ArrowLeft, User } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import ApiService from '../../Services/Apiservice'
 import { toast } from 'react-toastify'
+import { MdOutlineMoreTime, MdContacts, MdApartment } from 'react-icons/md'
+import { IoIosContact } from 'react-icons/io'
+import RightPanelLayout from '../../Layout/RightPanelLayout'
 
 const ContactInfoForm = () => {
   const [showGuestForm, setShowGuestForm] = useState(false)
@@ -61,24 +54,11 @@ const ContactInfoForm = () => {
   const handleContinueAsGuest = () => {
     setShowGuestForm(true)
   }
-  const handleMenuClick = () => {
-    navigate('/profile')
-  }
-
-  const handleshoopingcartClick = () => {
-    navigate('/shoopingcart')
-  }
-  const handleLogout = () => {
-    localStorage.removeItem('guestUserId')
-    localStorage.removeItem('registredUserId')
-    localStorage.removeItem(`selectedLocation_${brandId}`)
-    navigate('/')
-  }
 
   return (
     <div className='flex flex-col md:flex-row min-h-screen bg-white'>
       {/* Left Sidebar */}
-      <div className='w-full md:w-2/5 min-h-screen border-r border-gray-200 flex flex-col'>
+      <div className='w-full md:w-[42%] min-h-screen border-r border-gray-200 flex flex-col'>
         {/* Header */}
         <div className='p-4 border-b border-gray-200'>
           <div className='flex items-center justify-between'>
@@ -108,19 +88,28 @@ const ContactInfoForm = () => {
               <div className='w-full max-w-md mx-auto'>
                 {/* Icon */}
                 <div className='flex justify-center mb-6'>
-                  <div className='w-20 h-20 bg-gradient-to-br from-cyan-400 to-cyan-500 rounded-lg shadow-lg flex items-center justify-center relative'>
-                    <div className='absolute top-2 left-2 right-2 h-1.5 bg-cyan-600 rounded-full'></div>
-                    <div className='absolute top-2 right-2 flex gap-1'>
-                      <div className='w-1.5 h-1.5 bg-yellow-400 rounded-full'></div>
-                      <div className='w-1.5 h-1.5 bg-green-400 rounded-full'></div>
+                  <div className='w-20 h-20 bg-gradient-to-br from-cyan-400 to-cyan-500 rounded-lg shadow-lg flex items-center justify-center relative overflow-hidden'>
+                    {/* Top bar */}
+                    <div className='absolute top-0 left-0 right-0 h-3 bg-yellow-400 rounded-t-lg'></div>
+
+                    {/* Window control dots */}
+                    <div className='absolute top-1 right-1.5 flex gap-0.5'>
+                      <div className='w-1.5 h-1.5 bg-cyan-700 rounded-sm'></div>
+                      <div className='w-1.5 h-1.5 bg-cyan-700 rounded-sm'></div>
+                      <div className='w-1.5 h-1.5 bg-cyan-700 rounded-sm'></div>
                     </div>
-                    <div className='mt-3'>
-                      <User className='w-8 h-8 text-white' />
+
+                    {/* User photo area - blue box */}
+                    <div className='absolute left-2 top-6 w-7 h-7 bg-blue-500 rounded flex items-center justify-center'>
+                      <IoIosContact className='w-5 h-5 text-yellow-400' />
                     </div>
-                    <div className='absolute bottom-4 right-4 space-y-1'>
-                      <div className='w-8 h-1 bg-yellow-300 rounded-full'></div>
-                      <div className='w-6 h-1 bg-yellow-300 rounded-full'></div>
-                      <div className='w-7 h-1 bg-yellow-300 rounded-full'></div>
+
+                    {/* Text lines */}
+                    <div className='absolute right-2 top-7 space-y-1'>
+                      <div className='w-8 h-0.5 bg-yellow-400 rounded-full'></div>
+                      <div className='w-8 h-0.5 bg-yellow-400 rounded-full'></div>
+                      <div className='w-6 h-0.5 bg-yellow-400 rounded-full'></div>
+                      <div className='w-7 h-0.5 bg-yellow-400 rounded-full'></div>
                     </div>
                   </div>
                 </div>
@@ -130,24 +119,25 @@ const ContactInfoForm = () => {
                   Contact Information
                 </h2>
 
-                {/* Benefits List - Centered */}
-                <div className='space-y-5 mb-8 text-center'>
+                {/* Benefits List - Perfectly Aligned */}
+                <div className='space-y-5 mb-8 flex flex-col items-center'>
                   <div className='flex items-center justify-center gap-4'>
-                    <Building2 className='w-5 h-5 text-gray-700' />
+                    <MdApartment className='w-5 h-5 text-gray-700' />
                     <span className='text-gray-800 font-medium'>
                       Save your addresses
                     </span>
                   </div>
 
+                  {/* Slight icon adjustment for visual balance */}
                   <div className='flex items-center justify-center gap-4'>
-                    <User className='w-5 h-5 text-gray-700' />
-                    <span className='text-gray-800 font-medium'>
+                    <MdContacts className='w-5 h-5 text-gray-700 translate-x-[34px]' />
+                    <span className='text-gray-800 font-medium translate-x-[34px]'>
                       Save your contact information
                     </span>
                   </div>
 
                   <div className='flex items-center justify-center gap-4'>
-                    <Clock className='w-5 h-5 text-gray-700' />
+                    <MdOutlineMoreTime className='w-5 h-5 text-gray-700' />
                     <span className='text-gray-800 font-medium'>
                       One-tap re-ordering
                     </span>
@@ -267,7 +257,7 @@ const ContactInfoForm = () => {
                 {/* Next Button */}
                 <button
                   onClick={handleGuestlogin}
-                  className='w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-3.5 rounded-lg transition-colors shadow-sm'
+                  className='w-full bg-[#FA0303] hover:bg-[#AF0202] text-white font-semibold py-3.5 rounded-lg transition-colors shadow-sm'
                 >
                   Next
                 </button>
@@ -278,52 +268,7 @@ const ContactInfoForm = () => {
       </div>
 
       {/* Right Panel - Hero Image */}
-      <div className='flex-1 relative bg-black'>
-        {/* Top Navigation — hidden on mobile */}
-        <div className='hidden md:absolute md:top-6 md:left-6 md:right-6 md:z-10 md:block'>
-          <div className='flex justify-between items-center'>
-            <div className='flex space-x-4'>
-              <button
-                onClick={handleMenuClick}
-                className='w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-opacity-30 transition-all'
-              >
-                <Menu className='w-6 h-6' />
-              </button>
-              <button
-                onClick={handleshoopingcartClick}
-                className='w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-opacity-30 transition-all'
-              >
-                <ShoppingBag className='w-6 h-6' />
-              </button>
-              <button className='w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-opacity-30 transition-all'>
-                <Search className='w-6 h-6' />
-              </button>
-              <button
-                onClick={handleLogout}
-                className='w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-opacity-30 transition-all'
-              >
-                <LogOut className='w-6 h-6' />
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Hero Section — hidden on mobile */}
-        <div className='hidden md:block relative h-screen'>
-          <img
-            src={heroImage}
-            alt='Hero Food'
-            className='w-full h-full object-cover'
-          />
-
-          {/* Bottom IG button */}
-          <div className='absolute top-1/2 right-0 z-20 transform -translate-y-1/2'>
-            <div className='w-12 h-12 bg-gradient-to-br from-purple-500 via-pink-500 to-orange-500 rounded-lg flex items-center justify-center text-white font-bold text-sm'>
-              IG
-            </div>
-          </div>
-        </div>
-      </div>
+      <RightPanelLayout />
     </div>
   )
 }
