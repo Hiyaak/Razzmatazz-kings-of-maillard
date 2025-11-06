@@ -4,6 +4,7 @@ import { AlarmClock, ArrowLeft, Clock } from 'lucide-react'
 import ApiService, { ImagePath } from '../../Services/Apiservice'
 import { useCart } from '../../Context/CartContext'
 import RightPanelLayout from '../../Layout/RightPanelLayout'
+import { Minus, Plus } from 'lucide-react'
 
 const Subproducts = () => {
   const { name } = useParams()
@@ -52,7 +53,7 @@ const Subproducts = () => {
   return (
     <div className='flex flex-col md:flex-row min-h-screen'>
       {/* Left Sidebar */}
-      <div className='w-full md:w-2/5 h-screen border-r border-gray-200 flex flex-col'>
+      <div className='w-full md:w-[42%] h-screen border-r border-gray-200 flex flex-col'>
         {/* Header */}
         <div className='p-2 border-b border-gray-200 flex-shrink-0'>
           <div className='flex items-center justify-between mb-1'>
@@ -72,14 +73,14 @@ const Subproducts = () => {
         </div>
 
         {/* Subproducts - Scrollable */}
-        <div className='flex-1  overflow-y-auto px-4 pb-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]'>
+        <div className='flex-1 overflow-y-auto px-4 pb-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]'>
           <div className='grid grid-cols-2 gap-4 cursor-pointer mt-8 pb-4'>
             {subProductCategories.map(item => {
               const quantity = getProductQuantity(item._id)
               return (
                 <div
                   key={item._id}
-                  className='relative rounded-md overflow-hidden p-4 flex flex-col'
+                  className='relative rounded-md overflow-hidden p-4 flex flex-col h-full' // Added h-full here
                 >
                   {/* Image */}
                   <div className='w-full h-56 mb-2 overflow-hidden rounded-sm relative'>
@@ -103,8 +104,8 @@ const Subproducts = () => {
                   {/* Name */}
                   <h2 className='text-lg font-semibold mb-3'>{item.name}</h2>
 
-                  {/* Description */}
-                  <p className='text-gray-600 text-sm mb-2 line-clamp-2'>
+                  {/* Description - Added flex-1 here */}
+                  <p className='text-gray-600 text-sm mb-2 line-clamp-2 flex-1'>
                     {item.description}
                   </p>
 
@@ -125,18 +126,18 @@ const Subproducts = () => {
                     <div className='flex items-center justify-between rounded-md px-2 py-1'>
                       <button
                         onClick={() => updateQuantity(item._id, quantity - 1)}
-                        className='w-8 h-8 flex items-center justify-center bg-white text-[#FA0303] border border-[#FA0303] rounded-full hover:bg-red-50 transition-colors leading-none text-lg'
+                        className='w-4 h-4 flex items-center justify-center bg-white text-[#FA0303] border-2 border-[#FA0303] rounded-full hover:bg-red-50 transition-colors leading-none text-lg'
                       >
-                        −
+                        <Minus className='w-3 h-3' />
                       </button>
-                      <span className='font-semibold text-center w-8'>
+                      <span className='px-3 py-0.5 text-center font-medium text-red-500 text-sm border border-gray-200 rounded'>
                         {quantity}
                       </span>
                       <button
                         onClick={() => updateQuantity(item._id, quantity + 1)}
-                        className='w-8 h-8 flex items-center justify-center bg-white text-[#FA0303] border border-[#FA0303] rounded-full hover:bg-red-50 transition-colors leading-none text-lg'
+                        className='w-4 h-4 flex items-center justify-center bg-white text-[#FA0303] border-2 border-[#FA0303] rounded-full hover:bg-red-50 transition-colors leading-none text-lg'
                       >
-                        +
+                        <Plus className='w-3 h-3' />
                       </button>
                     </div>
                   )}
@@ -148,11 +149,11 @@ const Subproducts = () => {
 
         {/* Bottom Section */}
         {!(selectedMethod && (selectedArea || selectedGovernate)) ? (
-          // ❌ Location not selected — show "Select your location"
-          <div className='p-3  border-gray-200 bg-white flex-shrink-0'>
+          // Location not selected — show "Select your location"
+          <div className='p-3 bg-white flex-shrink-0'>
             <button
               onClick={() => navigate('/pickupdeviler')}
-              className='w-full bg-[#FA0303] hover:bg-[#AF0202] text-white font-semibold py-2 rounded-lg transition-colors'
+              className='w-full bg-[#FA0303] hover:bg-[#AF0202] text-white font-semibold py-3 rounded-lg transition-colors'
             >
               Select your location
             </button>
