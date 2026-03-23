@@ -74,10 +74,6 @@ const Placeorder = () => {
     navigate('/usercheckout', { state: { profile } })
   }
 
-  const handleAdress = () => {
-    navigate('/adress')
-  }
-
   const fetchAdress = async () => {
     try {
       const { data } = await ApiService.get(`getAddressesByUser/${userId}`)
@@ -93,6 +89,19 @@ const Placeorder = () => {
     } catch (error) {
       toast.error('Something went wrong while loading your profile.')
     }
+  }
+
+  const handleAdress = () => {
+    const selectedAddressObj = userAdress.find(
+      addr => addr._id === selectedAddress
+    )
+
+    navigate('/adress', {
+      state: {
+        address: selectedAddressObj,
+        isEdit: true
+      }
+    })
   }
 
   const fetchProfile = async () => {
@@ -569,7 +578,7 @@ const Placeorder = () => {
                   </p>
                 </div>
                 <button className='text-gray-600 hover:text-[#FA0303]'>
-                  <HiPencil className='text-lg' />
+                  <HiPencil className='text-lg' onClick={handleAdress} />
                 </button>
               </div>
 

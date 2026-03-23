@@ -9,21 +9,21 @@ const API_URL = import.meta.env.VITE_API_URL
 const axiosInstance = axios.create({
   baseURL: API_URL,
   headers: {
-    "Content-Type": "application/json"
+    'Content-Type': 'application/json'
   }
-});
+})
 
-axiosInstance.interceptors.request.use((config) => {
-  const language = localStorage.getItem("lang") || "en";
+axiosInstance.interceptors.request.use(config => {
+  const language = localStorage.getItem('lang') || 'en'
 
   if (!config.headers) {
-    config.headers = {};
+    config.headers = {}
   }
 
-  config.headers["Accept-Language"] = language;
+  config.headers['Accept-Language'] = language
 
-  return config;
-});
+  return config
+})
 
 const ApiService = {
   get: (endpoint, params, token) =>
@@ -35,10 +35,14 @@ const ApiService = {
     axiosInstance.post(endpoint, data, {
       headers: token ? { Authorization: `Bearer ${token}` } : {}
     }),
-   delete: (endpoint, data = null, token) =>
+  put: (endpoint, data, token) =>
+    axiosInstance.put(endpoint, data, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {}
+    }),
+  delete: (endpoint, data = null, token) =>
     axiosInstance.delete(endpoint, {
       headers: token ? { Authorization: `Bearer ${token}` } : {},
-      data 
+      data
     })
 }
 export default ApiService
