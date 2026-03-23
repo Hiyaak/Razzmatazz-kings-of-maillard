@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import RightPanelLayout from '../../Layout/RightPanelLayout'
 import { ArrowLeft, CarFront } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import {
   FaCarSide,
   FaWalking,
@@ -14,6 +14,7 @@ import { useTranslation } from 'react-i18next'
 
 const Adress = () => {
   const { t } = useTranslation()
+  const location = useLocation()
   const [selectedType, setSelectedType] = useState('Home')
   const [locationData, setLocationData] = useState(null)
   const [formData, setFormData] = useState({
@@ -52,10 +53,15 @@ const Adress = () => {
     setFormData(prev => ({ ...prev, [name]: value }))
   }
 
+  const getValue = val => {
+    if (!val) return ''
+    if (typeof val === 'object') return val.en || ''
+    return val
+  }
+
   const handleSubmit = async e => {
     e.preventDefault()
 
-    // Prepare payload dynamically based on type
     let payload = {
       user_id: userId,
       type: selectedType.toLowerCase(),
@@ -79,7 +85,14 @@ const Adress = () => {
     }
 
     try {
-      const { data } = await ApiService.post('/createAddress', payload)
+      if (location.state?.isEdit) {
+        await ApiService.put('/updateAddress', {
+          address_id: location.state.address._id,
+          ...payload
+        })
+      } else {
+        await ApiService.post('/createAddress', payload)
+      }
 
       setFormData({
         Block: '',
@@ -93,13 +106,37 @@ const Adress = () => {
         paci: '',
         additional: ''
       })
+
       navigate('/placeorder')
     } catch (error) {
-      console.error('Error creating address:', error)
-      alert('Failed to create address. Please try again.')
+      console.log(error.response?.data)
+      alert(error.response?.data?.message || 'Failed to save address')
     }
   }
+  useEffect(() => {
+    if (location.state?.isEdit && location.state?.address) {
+      const addr = location.state.address
 
+      setFormData({
+        Block: getValue(addr.Block),
+        Street: getValue(addr.Street),
+        house: getValue(addr.house),
+        Floor: addr.Floor || '',
+        Building: getValue(addr.Building),
+        Apartment: getValue(addr.Apartment),
+        Office: getValue(addr.Office),
+        Avenue: getValue(addr.Avenue),
+        paci: addr.paci || '',
+        additional: getValue(addr.additional)
+      })
+
+      setSelectedType(
+        addr.type
+          ? addr.type.charAt(0).toUpperCase() + addr.type.slice(1)
+          : 'Home'
+      )
+    }
+  }, [location.state])
   return (
     <div className='flex flex-col md:flex-row min-h-screen'>
       {/* Left Sidebar */}
@@ -210,12 +247,18 @@ const Adress = () => {
               {/* Type Selector Buttons */}
               <div className='flex flex-wrap justify-center gap-4 sm:gap-6 md:gap-8 mb-10 px-4'>
                 {[
-                  { label: t('address.home'), icon: <FaHome className='w-5 h-5' /> },
+                  {
+                    label: t('address.home'),
+                    icon: <FaHome className='w-5 h-5' />
+                  },
                   {
                     label: t('address.apartment'),
                     icon: <FaBuilding className='w-5 h-5' />
                   },
-                  { label: t('address.office'), icon: <FaBriefcase className='w-5 h-5' /> }
+                  {
+                    label: t('address.office'),
+                    icon: <FaBriefcase className='w-5 h-5' />
+                  }
                 ].map(({ label, icon }) => (
                   <button
                     key={label}

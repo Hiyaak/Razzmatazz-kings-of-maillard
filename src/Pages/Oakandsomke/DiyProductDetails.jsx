@@ -19,9 +19,11 @@ const DiyProductDetails = () => {
   const [blockedDates, setBlockedDates] = useState([])
   const [blockedSlots, setBlockedSlots] = useState({})
   const [isMonthFullyBlocked, setIsMonthFullyBlocked] = useState(false)
-  const [isOrderLimitExceeded, setIsOrderLimitExceeded] = useState(false)
-  const [dateOrderCount, setDateOrderCount] = useState({})
+  const [blockedMonths, setBlockedMonths] = useState([])
+  const [reportData, setReportData] = useState([])
   const product = location.state?.product
+
+  console.log('productid', product.product_id)
 
   const { cart, addToCart, updateQuantity } = useCart()
   const brandId = localStorage.getItem('brandId')
@@ -29,6 +31,7 @@ const DiyProductDetails = () => {
   const { selectedMethod, selectedGovernate, selectedArea } = JSON.parse(
     localStorage.getItem(`selectedLocation_${brandId}`) || '{}'
   )
+
   useEffect(() => {
     if (!selectedDate || !product?.brandId) return
 
@@ -39,43 +42,51 @@ const DiyProductDetails = () => {
 
         const response = await ApiService.post('getMonthlyDiyComboReport', {
           brandId: product.brandId,
+          productId: product.product_id,
           year,
           month
         })
 
         if (!response.data?.status) return
 
-        // ✅ Reset states when month changes
-        setIsMonthFullyBlocked(false)
+        // ✅ reset
         setBlockedDates([])
         setBlockedSlots({})
+        setBlockedMonths([])
+        setIsMonthFullyBlocked(false)
+
+        // ✅ store report ONCE
+        setReportData(response.data.report || [])
 
         const fullyBlockedDates = []
         const partiallyBlocked = {}
-
-        // 🚫 If month is fully blocked
-        if (response.data.diyBlocks.length === 0) {
-          setIsMonthFullyBlocked(true)
-          return
-        }
+        const monthsBlocked = []
 
         response.data.diyBlocks.forEach(block => {
+          // ✅ blocked month
+          if (block.blockedMonth?.length) {
+            monthsBlocked.push(...block.blockedMonth)
+          }
+
+          // ✅ blocked dates
           block.blockedDate.forEach(date => {
             const dateKey = new Date(date).toDateString()
 
-            // ✅ If orderLimit exists → DO NOT fully block
-            if (block.orderLimit && block.orderLimit > 0) {
-              // Treat as partially available (not blocked)
-              partiallyBlocked[dateKey] = block.blockedTimeSlots || []
-            } else if (block.blockedTimeSlots.length === 0) {
-              // 🚫 Fully blocked only if no slots AND no order limit
+            if (block.blockedTimeSlots?.length === 0) {
               fullyBlockedDates.push(new Date(date))
             } else {
-              // ⏱ Partially blocked slots
               partiallyBlocked[dateKey] = block.blockedTimeSlots
             }
           })
         })
+
+        setBlockedMonths(monthsBlocked)
+
+        // ✅ full month block
+        if (monthsBlocked.includes(month)) {
+          setIsMonthFullyBlocked(true)
+          return
+        }
 
         setBlockedDates(fullyBlockedDates)
         setBlockedSlots(partiallyBlocked)
@@ -87,9 +98,13 @@ const DiyProductDetails = () => {
     fetchMonthlyReport()
   }, [selectedDate?.getFullYear(), selectedDate?.getMonth(), product])
 
-  const handleReviewOrder = () => {
-    navigate('/shoopingcart')
-  }
+  useEffect(() => {
+    const month = selectedDate?.getMonth() + 1
+
+    if (blockedMonths.includes(month)) {
+      setSelectedSlot(null)
+    }
+  }, [selectedDate, blockedMonths])
 
   const staticTimeSlots = [
     { start: '12:00 PM', end: '1:00 PM' },
@@ -145,6 +160,17 @@ const DiyProductDetails = () => {
       setSelectedSlot(null)
     }
   }, [selectedDate])
+
+  const selectedDateKey = selectedDate
+    ? `${selectedDate.getFullYear()}-${String(
+        selectedDate.getMonth() + 1
+      ).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`
+    : null
+
+  const isOrderLimitExceeded = (reportData || []).some(
+    item => item.date === selectedDateKey && item.exceeded
+  )
+
   const slotsForSelectedDate =
     blockedSlots[new Date(selectedDate).toDateString()] || []
 
@@ -156,7 +182,9 @@ const DiyProductDetails = () => {
         const selectedStart = selectedSlot.split(' - ')[0]
         return slot.startTime === selectedStart
       }))
-
+  const handleReviewOrder = () => {
+    navigate('/shoopingcart')
+  }
   return (
     <div className='flex flex-col md:flex-row min-h-screen'>
       {/* Left Sidebar */}
@@ -214,12 +242,20 @@ const DiyProductDetails = () => {
                         return toast.error('Please select a date')
                       }
 
-                      if (isAddDisabled) {
-                        return toast.error('Order limit reached')
+                      if (isOrderLimitExceeded) {
+                        return toast.error('Order limit reached for this date')
+                      }
+
+                      if (isDateDisabled) {
+                        return toast.error('Selected date is unavailable')
                       }
 
                       if (!selectedSlot) {
                         return toast.error('Please select time')
+                      }
+
+                      if (isAddDisabled) {
+                        return toast.error('Selected slot is not available')
                       }
 
                       addToCart({
