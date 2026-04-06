@@ -109,6 +109,24 @@ const ShoppingCartPage = () => {
     })
   }
 
+  const uniqueCart = React.useMemo(() => {
+  const map = new Map();
+
+  cart.forEach((item) => {
+    // 👉 For catering use packageId as unique
+    const key =
+      item.type === "catering"
+        ? `catering-${item.packageId}`
+        : item.cartItemId;
+
+    if (!map.has(key)) {
+      map.set(key, item);
+    }
+  });
+
+  return Array.from(map.values());
+}, [cart]);
+
   return (
     <div className='flex flex-col md:flex-row min-h-screen'>
       {/* Left Sidebar (40% on desktop, full on mobile) */}
@@ -216,7 +234,8 @@ const ShoppingCartPage = () => {
             ) : (
               // Cart Items List
               <div className='space-y-4 mt-1 px-4 border-b border-gray-200'>
-                {cart.map(item => (
+                {/* {cart.map(item => ( */}
+                {uniqueCart.map(item => (
                   <div
                     key={item.cartItemId}
                     className='border-b border-gray-200 pb-4 last:border-b-0'

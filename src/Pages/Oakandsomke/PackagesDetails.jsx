@@ -816,32 +816,60 @@ const PackageDetails = () => {
                 }
               })
 
+              // const cartPayload = {
+              //   cartItemId: isEdit
+              //     ? cartItemIdFromState
+              //     : `catering-${packageData.package.id}-${Date.now()}`,
+              //   type: 'catering',
+              //   orderType: 'catering',
+
+              //   packageId: packageData.package.id,
+              //   brandId: packageData.brand?.id,
+              //   persons: packageData.package.persons,
+
+              //   name: packageData.package.name,
+              //   image: packageData.package.images?.[0],
+
+              //   selections: formattedSelections,
+              //   additionalServices: formattedAdditionalServices,
+
+              //   date: selectedDate,
+              //   time: selectedSlot,
+              //   specialInstructions: specialRequest,
+              //   extraPersons,
+              //   extraPersonPrice,
+
+              //   price: finalTotal,
+              //   quantity: 1
+              // }
+
               const cartPayload = {
-                cartItemId: isEdit
-                  ? cartItemIdFromState
-                  : `catering-${packageData.package.id}-${Date.now()}`,
-                type: 'catering',
-                orderType: 'catering',
+  cartItemId: isEdit
+    ? cartItemIdFromState
+    : `catering-${packageData.package.id}-${formatDateOnly(selectedDate)}-${selectedSlot}`,
 
-                packageId: packageData.package.id,
-                brandId: packageData.brand?.id,
-                persons: packageData.package.persons,
+  type: 'catering',
+  orderType: 'catering',
 
-                name: packageData.package.name,
-                image: packageData.package.images?.[0],
+  packageId: packageData.package.id,
+  brandId: packageData.brand?.id,
+  persons: packageData.package.persons,
 
-                selections: formattedSelections,
-                additionalServices: formattedAdditionalServices,
+  name: packageData.package.name,
+  image: packageData.package.images?.[0],
 
-                date: selectedDate,
-                time: selectedSlot,
-                specialInstructions: specialRequest,
-                extraPersons,
-                extraPersonPrice,
+  selections: formattedSelections,
+  additionalServices: formattedAdditionalServices,
 
-                price: finalTotal,
-                quantity: 1
-              }
+  date: selectedDate,
+  time: selectedSlot,
+  specialInstructions: specialRequest,
+  extraPersons,
+  extraPersonPrice,
+
+  price: finalTotal,
+  quantity: 1
+}
 
               if (isEdit) {
                 addToCart({
