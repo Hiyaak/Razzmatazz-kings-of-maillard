@@ -1,0 +1,20 @@
+name: Auto Merge PR
+ 
+on:
+  pull_request_review:
+    types: [submitted]
+ 
+permissions:
+  contents: write
+  pull-requests: write
+ 
+jobs:
+  automerge:
+    if: github.event.review.state == 'approved'
+    runs-on: ubuntu-latest
+ 
+    steps:
+      - name: Auto merge
+        uses: pascalgn/automerge-action@v0.15.6
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
