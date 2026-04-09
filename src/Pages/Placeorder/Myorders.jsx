@@ -215,6 +215,7 @@ const Myorders = () => {
       })
 
       const result = response.data
+      console.log('Cancel order response:', result)
 
       if (result.status) {
         toast.success('Order cancelled successfully')
