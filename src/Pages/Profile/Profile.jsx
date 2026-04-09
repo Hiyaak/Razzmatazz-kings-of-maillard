@@ -17,6 +17,7 @@ const MenuPage = () => {
   const { t } = useTranslation()
   const [activeView, setActiveView] = useState('menu')
   const [activeTab, setActiveTab] = useState('register')
+  const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [formData, setFormData] = useState({
     email: '',
@@ -44,7 +45,7 @@ const MenuPage = () => {
       .min(8, 'Password must be at least 8 characters')
       .required('Password is required')
   })
-  
+
   const registerSchema = Yup.object().shape({
     name: Yup.string()
       .trim()
@@ -69,21 +70,20 @@ const MenuPage = () => {
 
   const handleRegisterUser = async values => {
     try {
-      // 1️⃣ Ask notification permission
+      setLoading(true) // 🔥 start loader
+
       const permission = await Notification.requestPermission()
       if (permission !== 'granted') {
         toast.error('Please allow notifications to continue')
+        setLoading(false)
         return
       }
 
-      // 2️⃣ Register Service Worker
       const swPath = '/oakandsmoke/firebase-messaging-sw.js'
       await navigator.serviceWorker.register(swPath)
 
-      // 3️⃣ WAIT until Service Worker is ACTIVE
       const registration = await navigator.serviceWorker.ready
 
-      // 4️⃣ Generate FCM Token
       const fcmToken = await getToken(messaging, {
         vapidKey:
           'BBQQmlldlGlgReCfvtivjs0mbbw0cU9wsDu44CCMISj9ddCBibfd8byKS8GfJsdDO5oicRUG5z_lO-i5JZHBsPU',
@@ -92,6 +92,7 @@ const MenuPage = () => {
 
       if (!fcmToken) {
         toast.error('Failed to generate FCM token')
+        setLoading(false)
         return
       }
 
@@ -108,22 +109,32 @@ const MenuPage = () => {
 
       const { data } = await ApiService.post('registerWithEmail', payload)
 
-      if (data.status) {
+      if (data?.status) {
         sessionStorage.setItem('pendingEmail', values.email)
         sessionStorage.setItem('pendingOtp', data.otp)
         toast.success('Registration successful! Please verify your OTP.')
         navigate('/otpverification')
       } else {
-        toast.error(data.message || 'Registration failed')
+        toast.error(data?.message || 'Registration failed')
       }
     } catch (error) {
       console.error('🔥 Registration error:', error)
-      toast.error('Something went wrong during registration.')
+
+      const apiMessage =
+        error?.response?.data?.message ||
+        error?.message ||
+        'Something went wrong during registration.'
+
+      toast.error(apiMessage)
+    } finally {
+      setLoading(false) // 🔥 stop loader ALWAYS
     }
   }
 
   const handleLoginUser = async values => {
     try {
+      setLoading(true)
+
       const payload = {
         name: values.name,
         mobileNumber: Number(values.mobileNumber),
@@ -144,6 +155,8 @@ const MenuPage = () => {
     } catch (error) {
       console.error('Login error:', error)
       toast.error('Something went wrong')
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -479,10 +492,25 @@ const MenuPage = () => {
                 <div className='p-3 bg-white sticky bottom-0'>
                   <button
                     type='submit'
-                    className='w-full bg-[#FA0303] hover:bg-[#AF0202] text-white font-bold py-3 rounded-lg transition-colors text-center'
+                    disabled={loading}
+                    className={`w-full flex items-center justify-center gap-2 
+      ${
+        loading
+          ? 'bg-gray-400 cursor-not-allowed'
+          : 'bg-[#FA0303] hover:bg-[#AF0202]'
+      } 
+      text-white font-bold py-3 rounded-lg transition-colors`}
                   >
+                    {loading && (
+                      <span className='w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin'></span>
+                    )}
+
                     {activeTab === 'login'
-                      ? t('profile.Login')
+                      ? loading
+                        ? 'Logging in...'
+                        : t('profile.Login')
+                      : loading
+                      ? 'Registering...'
                       : t('profile.Register')}
                   </button>
                 </div>

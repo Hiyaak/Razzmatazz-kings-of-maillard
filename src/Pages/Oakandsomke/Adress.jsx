@@ -81,7 +81,7 @@ const Adress = () => {
     } else if (selectedType === 'Office') {
       payload.Floor = formData.Floor
       payload.Building = formData.Building
-      payload.Office = formData.Office
+      payload.Office = formData.Office 
     }
 
     try {

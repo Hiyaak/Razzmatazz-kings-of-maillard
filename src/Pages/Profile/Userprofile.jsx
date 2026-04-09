@@ -99,7 +99,7 @@ const Userprofile = () => {
     }
   }
 
-  // ✅ FIXED VERSION — deletes user & clears entire localStorage
+  //  FIXED VERSION — deletes user & clears entire localStorage
   const handleAccountDelete = async () => {
     if (deleteConfirmText !== 'Delete') return
 
