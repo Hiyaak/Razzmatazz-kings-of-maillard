@@ -40,6 +40,10 @@ const DiyProducts = lazy(() => import('./Pages/Oakandsomke/DiyProducts'))
 const DiyProductDetails = lazy(() =>
   import('./Pages/Oakandsomke/DiyProductDetails')
 )
+const Qrorder = lazy(() =>
+  import('./Pages/Oakandsomke/Qrorder')
+)
+
 
 function App () {
   return (
@@ -78,6 +82,7 @@ function App () {
             <Route path='/getAllPackages' element={<GetAllPackages />} />
             {/* <Route path="/packagesdetails" element={<PackagesDetails />} /> */}
             <Route path='/package/:packageId' element={<PackagesDetails />} />
+            <Route path='/order/:orderId' element={<Qrorder />} />
           </Routes>
         </Suspense>
       </Router>
