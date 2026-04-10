@@ -40,10 +40,7 @@ const DiyProducts = lazy(() => import('./Pages/Oakandsomke/DiyProducts'))
 const DiyProductDetails = lazy(() =>
   import('./Pages/Oakandsomke/DiyProductDetails')
 )
-const Qrorder = lazy(() =>
-  import('./Pages/Oakandsomke/Qrorder')
-)
-
+const Qrorder = lazy(() => import('./Pages/Oakandsomke/Qrorder'))
 
 function App () {
   return (
@@ -83,6 +80,8 @@ function App () {
             {/* <Route path="/packagesdetails" element={<PackagesDetails />} /> */}
             <Route path='/package/:packageId' element={<PackagesDetails />} />
             <Route path='/order/:orderId' element={<Qrorder />} />
+
+            <Route path='*' element={<h2>Page Not Found</h2>} />
           </Routes>
         </Suspense>
       </Router>
