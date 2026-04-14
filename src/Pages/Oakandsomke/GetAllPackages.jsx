@@ -110,12 +110,7 @@ const Subproducts = () => {
                   {/* Add / Quantity */}
                   {quantity === 0 ? (
                     <button
-                      onClick={() =>
-                        addToCart({
-                          ...item,
-                          price: item.pricing.packagePrice // normalize
-                        })
-                      }
+                      onClick={() => navigate(`/package/${item._id}`)}
                       className='border border-[#FA0303] text-[#FA0303] px-4 rounded hover:bg-red-50 transition-colors font-medium w-full'
                     >
                       + {t('ShoopingCart.Add')}

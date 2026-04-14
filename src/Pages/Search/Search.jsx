@@ -45,9 +45,26 @@ const Search = () => {
     }
 
     const filtered = subProducts.filter(product => {
-      const name = product?.name?.toLowerCase() || ''
-      const description = product?.description?.toLowerCase() || ''
-      const productName = product?.productName?.toLowerCase() || ''
+      const name =
+        typeof product.name === 'string'
+          ? product.name.toLowerCase()
+          : product.name?.[language]?.toLowerCase() ||
+            product.name?.en?.toLowerCase() ||
+            ''
+
+      const description =
+        typeof product.description === 'string'
+          ? product.description.toLowerCase()
+          : product.description?.[language]?.toLowerCase() ||
+            product.description?.en?.toLowerCase() ||
+            ''
+
+      const productName =
+        typeof product.productName === 'string'
+          ? product.productName.toLowerCase()
+          : product.productName?.[language]?.toLowerCase() ||
+            product.productName?.en?.toLowerCase() ||
+            ''
 
       return (
         name.includes(query) ||
