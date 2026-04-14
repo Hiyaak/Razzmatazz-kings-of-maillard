@@ -415,8 +415,23 @@ const Placeorder = () => {
             };
           }
 
+          // if (item.type === "diycombo") {
+          //   if (!item.selectedDate || !item.selectedSlot) {
+          //     toast.error("Please select date & time for DIY item");
+          //     return null;
+          //   }
+
+          //   return {
+          //     itemType: "diy",
+          //     subproduct_id: item._id,
+          //     quantity: item.quantity,
+          //     diyDate: new Date(item.selectedDate).toISOString().split("T")[0],
+          //     diyTime: item.selectedSlot,
+          //   };
+          // }
+
           if (item.type === "diycombo") {
-            if (!item.selectedDate || !item.selectedSlot) {
+            if (!item.diyDate || !item.selectedSlot) {
               toast.error("Please select date & time for DIY item");
               return null;
             }
@@ -425,7 +440,7 @@ const Placeorder = () => {
               itemType: "diy",
               subproduct_id: item._id,
               quantity: item.quantity,
-              diyDate: new Date(item.selectedDate).toISOString().split("T")[0],
+              diyDate: item.diyDate, // ✅ FIXED
               diyTime: item.selectedSlot,
             };
           }

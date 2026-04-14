@@ -266,7 +266,8 @@ const DiyProductDetails = () => {
                         image: product.image,
                         type: 'diycombo',
                         quantity: 1,
-                        selectedDate,
+                        // selectedDate,
+                        diyDate: selectedDateKey, 
                         selectedSlot
                       })
                     }}
