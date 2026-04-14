@@ -389,7 +389,7 @@ const Contact = () => {
           ></div>
 
           {/* Modal Content */}
-          <div className='absolute bottom-0 left-0 right-0 md:w-[42%] bg-white max-h-[50vh] md:max-h-[60vh] rounded-t-lg md:rounded-lg shadow-xl flex flex-col overflow-hidden'>
+          <div className='absolute bottom-0 left-0 right-0 md:w-[42%] bg-white max-h-[85vh] md:max-h-[80vh] rounded-t-lg md:rounded-lg shadow-xl flex flex-col overflow-hidden'>
             <div className='p-4  flex items-center justify-between flex-shrink-0'>
               <h2 className='text-xl font-semibold'>
                 {t('Contact.leaveFeedback')}
@@ -402,7 +402,7 @@ const Contact = () => {
               </button>
             </div>
 
-            <div className='flex-1 p-4 md:p-6 overflow-y-auto md:overflow-hidden'>
+            <div className='flex-1 p-4 md:p-6 overflow-y-auto'>
               {/* Rating Emojis */}
               <div className='flex justify-center gap-4 mb-6'>
                 {[1, 2, 3, 4, 5].map(value => (
