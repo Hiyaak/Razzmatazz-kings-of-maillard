@@ -406,11 +406,6 @@ const Myorders = () => {
                   </div>
 
                   {/* Status */}
-                  {/* <div className="text-sm mt-1">
-                    {t("MyOrders.Status")}: {order.status}
-                  </div> */}
-
-                  {/* Status */}
                   <div className='text-sm mt-1 flex justify-between items-center'>
                     <span>
                       {t('MyOrders.Status')}: {order.status}
@@ -436,6 +431,17 @@ const Myorders = () => {
                     if (order.paymentMethod === 'cash') {
                       // ❌ If already cancelled → show nothing
                       if (order.status === 'CancelledByUser') {
+                        return (
+                          <div className='mt-3 w-full bg-red-100 text-red-700 py-2 rounded-lg text-center font-medium'>
+                            {t('MyOrders.Cancelled')}
+                          </div>
+                        )
+                      }
+
+                      if (
+                        order.status === 'CancelledByUser' ||
+                        order.status === 'Rejected'
+                      ) {
                         return (
                           <div className='mt-3 w-full bg-red-100 text-red-700 py-2 rounded-lg text-center font-medium'>
                             {t('MyOrders.Cancelled')}
@@ -485,6 +491,14 @@ const Myorders = () => {
                         return (
                           <div className='mt-3 w-full bg-green-100 text-green-700 py-2 rounded-lg text-center font-medium'>
                             {t('MyOrders.Refunded')}
+                          </div>
+                        )
+
+                      case 'Rejected':
+                        return (
+                          <div className='mt-3 w-full bg-red-100 text-red-700 py-2 rounded-lg text-center font-medium'>
+                            {t('MyOrders.Order Rejected')} <br />
+                            {t('MyOrders.Amount Will Be Refunded')}
                           </div>
                         )
 
