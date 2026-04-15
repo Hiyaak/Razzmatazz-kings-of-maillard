@@ -126,7 +126,10 @@
     "Refund Requested": "تم طلب الاسترداد",
     "Refunded": "تم الاسترداد",
     "Order Rejected": "تم رفض طلبك.",
-    "Amount Will Be Refunded": "سيتم إعادة المبلغ."
+    "Amount Will Be Refunded": "سيتم إعادة المبلغ.",
+    "Enter Cancel Reason": "أدخل سبب الإلغاء",
+    "Close": "إغلاق",
+    "Confirm Cancel": "تأكيد الإلغاء"
   },
   "Catering": {
     "Select Date": "اختر التاريخ",
