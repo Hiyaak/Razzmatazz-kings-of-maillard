@@ -24,6 +24,10 @@ const Myorders = () => {
   const [rating, setRating] = useState('')
   const [feedback, setFeedback] = useState('')
 
+  const [showCancelModal, setShowCancelModal] = useState(false)
+
+  const [cancelReason, setCancelReason] = useState('')
+
   // ✅ Verify Payment
   const verifyPayment = async tapId => {
     try {
@@ -189,8 +193,13 @@ const Myorders = () => {
   }
 
   // ✅ Cancel Order
-  const cancelOrder = async orderId => {
+  const handleCancelOrder = async () => {
     try {
+      if (!cancelReason.trim()) {
+        toast.error('Please enter cancellation reason')
+        return
+      }
+
       const storedBrandId = localStorage.getItem('brandId')
 
       const userId =
@@ -202,29 +211,26 @@ const Myorders = () => {
         return
       }
 
-      const reason = prompt('Please enter reason for cancellation')
-
-      if (!reason) return
-
-      setCancellingId(orderId)
+      setCancellingId(selectedOrderId)
 
       const response = await ApiService.post('cancelOrder', {
-        order_id: orderId,
+        order_id: selectedOrderId,
         user_id: userId,
-        reason: reason
+        reason: cancelReason
       })
 
       const result = response.data
-      console.log('Cancel order response:', result)
 
       if (result.status) {
         toast.success('Order cancelled successfully')
         getOrders()
+        setShowCancelModal(false)
+        setCancelReason('')
       } else {
         toast.error(result.message || 'Failed to cancel order')
       }
     } catch (error) {
-      console.error('Cancel order error:', error)
+      console.error(error)
       toast.error('Something went wrong')
     } finally {
       setCancellingId(null)
@@ -457,7 +463,10 @@ const Myorders = () => {
                       // ✅ Otherwise show cancel button
                       return (
                         <button
-                          onClick={() => cancelOrder(order._id)}
+                          onClick={() => {
+                            setSelectedOrderId(order._id)
+                            setShowCancelModal(true)
+                          }}
                           disabled={cancellingId === order._id}
                           className='mt-3 w-full bg-red-500 text-white py-2 rounded-lg hover:bg-red-600 disabled:opacity-50'
                         >
@@ -579,6 +588,43 @@ const Myorders = () => {
                   className='px-4 py-2 bg-green-600 text-white rounded-md'
                 >
                   Submit
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {showCancelModal && (
+          <div className='fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50'>
+            <div className='bg-white rounded-xl w-[90%] max-w-md p-5 shadow-lg'>
+              <h2 className='text-lg font-semibold mb-3'>
+                {t('MyOrders.Cancel Order')}
+              </h2>
+
+              <textarea
+                placeholder={t('MyOrders.Enter Cancel Reason')}
+                value={cancelReason}
+                onChange={e => setCancelReason(e.target.value)}
+                className='w-full border rounded-lg p-2 mb-4 focus:outline-none'
+                rows={3}
+              />
+
+              <div className='flex justify-end gap-2'>
+                <button
+                  onClick={() => {
+                    setShowCancelModal(false)
+                    setCancelReason('')
+                  }}
+                  className='px-4 py-2 bg-gray-200 rounded-lg'
+                >
+                  {t('MyOrders.Close')}
+                </button>
+
+                <button
+                  onClick={() => handleCancelOrder()}
+                  className='px-4 py-2 bg-red-500 text-white rounded-lg'
+                >
+                  {t('MyOrders.Confirm Cancel')}
                 </button>
               </div>
             </div>

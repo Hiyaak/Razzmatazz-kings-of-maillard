@@ -126,7 +126,10 @@
     "Refund Requested": "Refund Requested",
     "Refunded": "Refunded",
     "Order Rejected": "Your order has been rejected.",
-    "Amount Will Be Refunded": "Amount will be refunded."
+    "Amount Will Be Refunded": "Amount will be refunded.",
+     "Enter Cancel Reason": "Enter cancellation reason",
+  "Close": "Close",
+  "Confirm Cancel": "Confirm Cancel"
   },
   "Catering": {
     "Select Date": "Select Date",
