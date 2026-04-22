@@ -40,12 +40,20 @@ const DiyProductDetails = () => {
         const year = selectedDate.getFullYear()
         const month = selectedDate.getMonth() + 1
 
+        // const response = await ApiService.post('getMonthlyDiyComboReport', {
+        //   brandId: product.brandId,
+        //   productId: product.product_id,
+        //   year,
+        //   month
+        // })
+
         const response = await ApiService.post('getMonthlyDiyComboReport', {
-          brandId: product.brandId,
-          productId: product.product_id,
-          year,
-          month
-        })
+  brandId: product.brandId,
+  productId: product.product_id,
+  subProductId: product._id,   // ✅ ADD THIS
+  year,
+  month
+})
 
         if (!response.data?.status) return
 
@@ -167,21 +175,43 @@ const DiyProductDetails = () => {
       ).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`
     : null
 
-  const isOrderLimitExceeded = (reportData || []).some(
-    item => item.date === selectedDateKey && item.exceeded
-  )
+  // const isOrderLimitExceeded = (reportData || []).some(
+  //   item => item.date === selectedDateKey && item.exceeded
+  // )
+
+  const selectedReport = (reportData || []).find(
+  item => item.date === selectedDateKey
+)
+
+const isOrderLimitExceeded = selectedReport?.exceeded || false
+const limitType = selectedReport?.limitType   // "product" OR "subproduct"
 
   const slotsForSelectedDate =
     blockedSlots[new Date(selectedDate).toDateString()] || []
 
+  // const isAddDisabled =
+  //   isDateDisabled ||
+  //   isOrderLimitExceeded ||
+  //   (selectedSlot &&
+  //     slotsForSelectedDate.some(slot => {
+  //       const selectedStart = selectedSlot.split(' - ')[0]
+  //       return slot.startTime === selectedStart
+  //     }))
   const isAddDisabled =
-    isDateDisabled ||
-    isOrderLimitExceeded ||
-    (selectedSlot &&
-      slotsForSelectedDate.some(slot => {
-        const selectedStart = selectedSlot.split(' - ')[0]
-        return slot.startTime === selectedStart
-      }))
+  isDateDisabled ||
+
+  // ✅ PRODUCT LIMIT → block everything
+  (isOrderLimitExceeded && limitType === "product") ||
+
+  // ✅ SUBPRODUCT LIMIT → block only this item
+  (isOrderLimitExceeded && limitType === "subproduct") ||
+
+  // ✅ SLOT BLOCK
+  (selectedSlot &&
+    slotsForSelectedDate.some(slot => {
+      const selectedStart = selectedSlot.split(' - ')[0]
+      return slot.startTime === selectedStart
+    }))
   const handleReviewOrder = () => {
     navigate('/shoopingcart')
   }
@@ -237,14 +267,25 @@ const DiyProductDetails = () => {
               <div className='mr-4'>
                 {quantity === 0 ? (
                   <button
+                  disabled={isAddDisabled} 
                     onClick={() => {
                       if (!selectedDate) {
                         return toast.error('Please select a date')
                       }
 
+                      // if (isOrderLimitExceeded) {
+                      //   return toast.error('Order limit reached for this date')
+                      // }
+
                       if (isOrderLimitExceeded) {
-                        return toast.error('Order limit reached for this date')
-                      }
+  if (limitType === "product") {
+    return toast.error('Product limit reached for this date')
+  }
+
+  if (limitType === "subproduct") {
+    return toast.error('This item limit reached for this date')
+  }
+}
 
                       if (isDateDisabled) {
                         return toast.error('Selected date is unavailable')
@@ -273,7 +314,8 @@ const DiyProductDetails = () => {
                     }}
                     className={`border px-4 py-1 rounded-full font-medium transition-colors
     ${
-      isDateDisabled
+      // isDateDisabled
+      isAddDisabled
         ? 'border-gray-300 text-gray-300 cursor-not-allowed'
         : 'border-[#FA0303] text-[#FA0303] hover:bg-red-50'
     }
