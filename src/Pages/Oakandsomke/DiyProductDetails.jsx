@@ -263,6 +263,8 @@ const limitType = selectedReport?.limitType   // "product" OR "subproduct"
                 </p>
               </div>
 
+              
+
               {/* Right Side - Quantity Control */}
               <div className='mr-4'>
                 {quantity === 0 ? (
