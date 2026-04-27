@@ -263,7 +263,7 @@ const limitType = selectedReport?.limitType   // "product" OR "subproduct"
                 </p>
               </div>
 
-              
+
 
               {/* Right Side - Quantity Control */}
               <div className='mr-4'>
@@ -481,7 +481,7 @@ const limitType = selectedReport?.limitType   // "product" OR "subproduct"
                 onClick={() => navigate('/pickupdeviler')}
                 className='w-full bg-[#FA0303] hover:bg-[#AF0202] text-white font-semibold py-3 rounded-lg transition-colors'
               >
-                Select your location
+                Select your location1
               </button>
             </div>
           ) : (
