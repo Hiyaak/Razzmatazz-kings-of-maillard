@@ -1,0 +1,88 @@
+name: Auto Assign & Secure Merge PR
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  pull_request_review:
+    types: [submitted]
+
+jobs:
+
+  # 🔒 REQUIRED CHECK (blocks manual merge)
+  required-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Register check
+        run: echo "Check started"
+
+      - name: Validate approval
+        if: github.event_name != 'pull_request_review' || github.event.review.state != 'approved' || github.event.review.user.login != 'YugandharRepo'
+        run: |
+          echo "Not approved by authorized reviewer → blocking merge"
+          exit 1
+
+      - name: Approved by correct user
+        if: github.event_name == 'pull_request_review' && github.event.review.state == 'approved' && github.event.review.user.login == 'YugandharRepo'
+        run: echo "Approved by authorized reviewer"
+
+  # 👤 AUTO ASSIGN REVIEWER
+  assign-reviewer:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Assign specific reviewer
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.pulls.requestReviewers({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.payload.pull_request.number,
+              reviewers: ["YugandharRepo"]
+            });
+
+            console.log("Reviewer assigned: YugandharRepo");
+
+  # 🤖 AUTO MERGE AFTER APPROVAL
+  automerge:
+    if: github.event_name == 'pull_request_review' && github.event.review.state == 'approved' && github.event.review.user.login == 'YugandharRepo'
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Merge PR safely
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const reviewer = context.payload.review.user.login;
+
+            console.log("Approved by:", reviewer);
+
+            if (reviewer !== "YugandharRepo") {
+              console.log("Unauthorized reviewer → skipping merge");
+              return;
+            }
+
+            const { data } = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pr.number,
+            });
+
+            if (!data.mergeable) {
+              console.log("PR is not mergeable yet");
+              return;
+            }
+
+            await github.rest.pulls.merge({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pr.number,
+              merge_method: "squash"
+            });
+
+            console.log("PR merged automatically");
