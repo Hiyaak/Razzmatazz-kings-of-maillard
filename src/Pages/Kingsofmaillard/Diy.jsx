@@ -21,7 +21,7 @@ const Diy = () => {
   const getProducts = async () => {
     try {
       const response = await ApiService.get(
-        'getAllProductByBrandName1/Oak and Smoke'
+        `getAllProductByBrandName1/${encodeURIComponent('Kings of Maillard')}`
       )
 
       const data = response.data

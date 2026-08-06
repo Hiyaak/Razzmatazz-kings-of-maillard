@@ -5,7 +5,7 @@ export default defineConfig({
   plugins: [react()],
 
   // Your app runs inside /oakandsmoke/
-  base: '/oakandsmoke/',
+  base: '/kingsofmaillard/',
 
   // Vite will copy /public/firebase-messaging-sw.js automatically
   publicDir: 'public'

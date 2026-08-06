@@ -27,7 +27,7 @@ const DiyProducts = () => {
     try {
       const payload = {
         product_id: productId,
-        brandName: 'Oak and Smoke'
+        brandName: 'Kings of Maillard'
       }
       const { data } = await ApiService.post('getAllSubproducts1', payload)
       console.log('Subproducts Response:', data)

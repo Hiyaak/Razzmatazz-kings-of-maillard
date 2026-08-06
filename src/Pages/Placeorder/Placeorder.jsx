@@ -206,7 +206,7 @@ const Placeorder = () => {
     try {
       setLoadingCoupons(true);
 
-      const brandName = "Oak and Smoke";
+      const brandName = "Kings of Maillard";
 
       const { data } = await ApiService.get(
         `getCouponsByBrandName?brandName=${encodeURIComponent(brandName)}`,

@@ -1,7 +1,7 @@
 import React, { useContext } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Menu, Search, BellMinus, Languages, Globe, Type } from 'lucide-react'
-import heroImage from '../assets/oak.jpg'
+import heroImage from '../assets/kings.jpg'
 import { Instagram } from 'lucide-react'
 import { RiShoppingBagLine } from 'react-icons/ri'
 import { LanguageContext } from '../Context/LanguageContext'

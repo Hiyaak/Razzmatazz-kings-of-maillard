@@ -3,18 +3,20 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
 import { CartProvider } from './Context/CartContext.jsx'
-import "./i18n";
+import './i18n'
 import { LanguageProvider } from './Context/LanguageContext.jsx'
+import { requestFcmToken } from './firebase/firebaseConfig'
 
-// ✅ REGISTER FIREBASE SERVICE WORKER
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker
-    .register('/firebase-messaging-sw.js')
-    .then(registration => {
-      console.log('🔥 Service Worker registered successfully:', registration)
+if (window.isSecureContext && 'serviceWorker' in navigator) {
+  requestFcmToken()
+    .then(token => {
+      if (token) {
+        localStorage.setItem('fcmToken', token)
+        console.log('Service Worker / FCM ready')
+      }
     })
     .catch(err => {
-      console.log('❌ Service Worker registration failed:', err)
+      console.log('FCM init skipped:', err)
     })
 }
 

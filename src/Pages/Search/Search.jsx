@@ -20,7 +20,7 @@ const Search = () => {
   const getAllSubProducts = async () => {
     try {
       const { data } = await ApiService.get(
-        `getAllSubProductByBrandName/${encodeURIComponent('Oak and Smoke')}`
+        `getAllSubProductByBrandName/${encodeURIComponent('Kings of Maillard')}`
       )
       if (data.status) {
         setSubProducts(data.subproducts)

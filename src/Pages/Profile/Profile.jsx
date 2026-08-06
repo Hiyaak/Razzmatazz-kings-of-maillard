@@ -6,8 +6,7 @@ import { toast } from "react-toastify";
 import RightPanelLayout from "../../Layout/RightPanelLayout";
 import { FaShoppingCart } from "react-icons/fa";
 import { MdMenuBook, MdOutlineMoreTime } from "react-icons/md";
-import { getToken } from 'firebase/messaging'
-import { messaging } from '../../firebase/firebaseConfig'
+import { requestFcmToken } from '../../firebase/firebaseConfig'
 import * as Yup from "yup";
 import { Formik, Form } from "formik";
 import { useTranslation } from "react-i18next";
@@ -70,33 +69,20 @@ const MenuPage = () => {
 
   const handleRegisterUser = async (values) => {
     try {
-      setLoading(true); // 🔥 start loader
+      setLoading(true)
 
-      const permission = await Notification.requestPermission()
-      if (permission !== 'granted') {
-        toast.error('Please allow notifications to continue')
-        setLoading(false)
-        return
+      let fcmToken = ''
+
+      if (window.isSecureContext && 'Notification' in window) {
+        const permission = await Notification.requestPermission()
+        if (permission === 'granted') {
+          fcmToken = (await requestFcmToken()) || ''
+        }
       }
 
-      const swPath = '/oakandsmoke/firebase-messaging-sw.js'
-      await navigator.serviceWorker.register(swPath)
-
-      const registration = await navigator.serviceWorker.ready
-
-      const fcmToken = await getToken(messaging, {
-        vapidKey:
-          'BBQQmlldlGlgReCfvtivjs0mbbw0cU9wsDu44CCMISj9ddCBibfd8byKS8GfJsdDO5oicRUG5z_lO-i5JZHBsPU',
-        serviceWorkerRegistration: registration
-      })
-
-      if (!fcmToken) {
-        toast.error('Failed to generate FCM token')
-        setLoading(false)
-        return
+      if (fcmToken) {
+        localStorage.setItem('fcmToken', fcmToken)
       }
-
-      localStorage.setItem('fcmToken', fcmToken)
 
       const payload = {
         name: values.name,
@@ -106,15 +92,6 @@ const MenuPage = () => {
         brandId: storedBrandId,
         token: fcmToken
       }
-
-      // const payload = {
-      //   name: values.name,
-      //   mobileNumber: Number(values.mobileNumber),
-      //   email: values.email,
-      //   password: values.password,
-      //   brandId: storedBrandId,
-      //   token: "",
-      // };
 
       const { data } = await ApiService.post("registerWithEmail", payload);
 

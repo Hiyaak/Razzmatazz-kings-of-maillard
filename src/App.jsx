@@ -5,19 +5,19 @@ import Loader from './Components/Loader/Loader'
 
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
-import ComboDetails from './Pages/Oakandsomke/ComboDetails'
+import ComboDetails from './Pages/Kingsofmaillard/ComboDetails'
 
-const Oakandsomke = lazy(() => import('./Pages/Oakandsomke/Ordernowsomke'))
+const Kingsofmaillard = lazy(() => import('./Pages/Kingsofmaillard/Ordernowsomke'))
 const Profile = lazy(() => import('./Pages/Profile/Profile'))
 const Otpverification = lazy(() => import('./Pages/Profile/Otpverification'))
-const Subproducts = lazy(() => import('./Pages/Oakandsomke/Subproducts'))
+const Subproducts = lazy(() => import('./Pages/Kingsofmaillard/Subproducts'))
 const SubproductDetails = lazy(() =>
-  import('./Pages/Oakandsomke/SubproductDetails')
+  import('./Pages/Kingsofmaillard/SubproductDetails')
 )
-const Shoopingcart = lazy(() => import('./Pages/Oakandsomke/Shoopingcart'))
-const Adress = lazy(() => import('./Pages/Oakandsomke/Adress'))
+const Shoopingcart = lazy(() => import('./Pages/Kingsofmaillard/Shoopingcart'))
+const Adress = lazy(() => import('./Pages/Kingsofmaillard/Adress'))
 const Contact = lazy(() => import('./Pages/Contact/Contact'))
-const Pickupdeviler = lazy(() => import('./Pages/Oakandsomke/Pickupdeviler'))
+const Pickupdeviler = lazy(() => import('./Pages/Kingsofmaillard/Pickupdeviler'))
 const Login = lazy(() => import('./Pages/Login/Login'))
 const Placeorder = lazy(() => import('./Pages/Placeorder/Placeorder'))
 const Myorders = lazy(() => import('./Pages/Placeorder/Myorders'))
@@ -30,17 +30,17 @@ const Usercheckout = lazy(() => import('./Pages/Profile/Usercheckout'))
 const Getnotification = lazy(() =>
   import('./Pages/Notofication/Getnotification')
 )
-const GetAllPackages = lazy(() => import('./Pages/Oakandsomke/GetAllPackages'))
+const GetAllPackages = lazy(() => import('./Pages/Kingsofmaillard/GetAllPackages'))
 const PackagesDetails = lazy(() =>
-  import('./Pages/Oakandsomke/PackagesDetails')
+  import('./Pages/Kingsofmaillard/PackagesDetails')
 )
-const Combos = lazy(() => import('./Pages/Oakandsomke/Combo'))
-const Diy = lazy(() => import('./Pages/Oakandsomke/Diy'))
-const DiyProducts = lazy(() => import('./Pages/Oakandsomke/DiyProducts'))
+const Combos = lazy(() => import('./Pages/Kingsofmaillard/Combo'))
+const Diy = lazy(() => import('./Pages/Kingsofmaillard/Diy'))
+const DiyProducts = lazy(() => import('./Pages/Kingsofmaillard/DiyProducts'))
 const DiyProductDetails = lazy(() =>
-  import('./Pages/Oakandsomke/DiyProductDetails')
+  import('./Pages/Kingsofmaillard/DiyProductDetails')
 )
-const Qrorder = lazy(() => import('./Pages/Oakandsomke/Qrorder'))
+const Qrorder = lazy(() => import('./Pages/Kingsofmaillard/Qrorder'))
 
 function App () {
   return (
@@ -48,7 +48,7 @@ function App () {
       <Router>
         <Suspense fallback={<Loader />}>
           <Routes>
-            <Route path='/' element={<Oakandsomke />} />
+            <Route path='/' element={<Kingsofmaillard />} />
             <Route path='/profile' element={<Profile />} />
             <Route path='/otpverification' element={<Otpverification />} />
             <Route path='/combo' element={<Combos />} />

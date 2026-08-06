@@ -15,7 +15,7 @@ import heroImage from '../../assets/concept.jpg'
 import CateringImage from '../../assets/catering.jpg'
 import ComboImage from '../../assets/combo.jpg'
 import ComboDIY from '../../assets/diy.jpg'
-import oak from '../../assets/oaklogo1.png'
+import kingsofmaillard from '../../assets/kingsofmallard.png'
 import ApiService, { ImagePath } from '../../Services/Apiservice'
 import RightPanelLayout from '../../Layout/RightPanelLayout'
 import { LuBike } from 'react-icons/lu'
@@ -38,7 +38,7 @@ const FoodDeliveryApp = () => {
   const getProductCategories = async () => {
     try {
       const { data } = await ApiService.get(
-        `getAllProductByBrandName/Oak and Smoke`
+        `getAllProductByBrandName/${encodeURIComponent('Kings of Maillard')}`
       )
       if (data.status) {
         setproductCategories(data.products)
@@ -140,7 +140,7 @@ const FoodDeliveryApp = () => {
                 {/* Left side - logo and text */}
                 <div className='flex items-center gap-3'>
                   <img
-                    src={oak}
+                    src={kingsofmaillard}
                     alt='Logo'
                     className='w-16 h-16 object-contain'
                   />
@@ -402,7 +402,7 @@ const FoodDeliveryApp = () => {
               {/* Left side - Logo and Text */}
               <div className='flex items-center space-x-3'>
                 <img
-                  src={oak}
+                  src={kingsofmaillard}
                   alt='Logo'
                   className='w-12 h-12 object-contain'
                 />

@@ -1,87 +1,63 @@
-import { ArrowLeft, Minus, Plus } from 'lucide-react'
-import React, { use, useContext, useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import RightPanelLayout from '../../Layout/RightPanelLayout'
-import { useCart } from '../../Context/CartContext'
+import React, { useContext, useEffect, useState } from 'react'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
+import { AlarmClock, ArrowLeft, Clock } from 'lucide-react'
 import ApiService, { ImagePath } from '../../Services/Apiservice'
-import { useTranslation } from 'react-i18next'
+import { useCart } from '../../Context/CartContext'
+import RightPanelLayout from '../../Layout/RightPanelLayout'
+import { Minus, Plus } from 'lucide-react'
 import { LanguageContext } from '../../Context/LanguageContext'
+import { useTranslation } from 'react-i18next'
 
-const Combo = () => {
-  const navigate = useNavigate()
+const Subproducts = () => {
   const { t } = useTranslation()
+
   const { language } = useContext(LanguageContext)
+  const location = useLocation()
+  const navigate = useNavigate()
   const { cart, addToCart, updateQuantity } = useCart()
   const brandId = localStorage.getItem('brandId')
-  const [combos, setCombos] = useState([])
-  const [allSubProducts, setAllSubProducts] = useState([])
 
   const { selectedMethod, selectedGovernate, selectedArea } = JSON.parse(
     localStorage.getItem(`selectedLocation_${brandId}`) || '{}'
   )
 
-  const getComboCategories = async () => {
-    const response = await ApiService.get('getFixedComboForUser/Oak and Smoke')
-    console.log('Combo Categories:', response.data.fixedCombos)
-    setCombos(response.data.fixedCombos)
-  }
+  const [subProductCategories, setSubProductCategories] = useState([])
+  const { productId } = useParams()
 
-  useEffect(() => {
-    getComboCategories()
-  }, [language])
-
-  useEffect(() => {
-    fetchSubProducts()
-  }, [])
-
-  const fetchSubProducts = async () => {
+  const getSubProductCategories = async productId => {
     try {
-      const brandName = sessionStorage.getItem('brandName')
-      const response = await fetch(API_URL + `getByBrandName/${brandName}`)
-      const result = await response.json()
-
-      let list = []
-
-      result.products.forEach(product => {
-        product.subproducts.forEach(sub => {
-          list.push({
-            ...sub,
-            productName: product.productName
-          })
-        })
-      })
-
-      setAllSubProducts(list)
-    } catch (err) {
-      console.log(err)
+      const payload = {
+        product_id: productId,
+        brandName: 'Kings of Maillard'
+      }
+      const { data } = await ApiService.post('getAllSubproducts', payload)
+      console.log('Subproducts Response:', data)
+      if (data.status) setSubProductCategories(data.subproducts)
+    } catch (error) {
+      console.log('Error fetching subproducts:', error)
     }
   }
 
-  const toggleSubProduct = id => {
-    setComboDetails(prev => {
-      const exists = prev.subproductIds.includes(id)
-
-      return {
-        ...prev,
-        subproductIds: exists
-          ? prev.subproductIds.filter(x => x !== id)
-          : [...prev.subproductIds, id]
-      }
-    })
-  }
+  useEffect(() => {
+    if (productId) {
+      getSubProductCategories(productId)
+    }
+  }, [productId, language])
 
   const handleReviewOrder = () => {
     navigate('/shoopingcart')
   }
 
-  const getComboQuantity = comboId => {
-    const cartItem = cart.find(item => item.cartItemId === `combo-${comboId}`)
+  const getProductQuantity = productId => {
+    const cartItem = cart.find(
+      item => item.cartItemId === `product-${productId}`
+    )
     return cartItem ? cartItem.quantity : 0
   }
 
-  const handleNavigate = combo => {
-    navigate(`/combodetails/${combo._id}`, {
-      state: { combo: combo }
+  const handleNavigate = item => {
+    navigate(`/subproductdetails/${item._id}`, {
+      state: { product: item }
     })
   }
 
@@ -100,76 +76,88 @@ const Combo = () => {
             </button>
 
             <h1 className='text-2xl font-semibold text-gray-900 text-center flex-1'>
-              {t('PlaceOrder.COMBOS')}
+              {subProductCategories[0]?.productName?.toUpperCase()}
             </h1>
 
             <div className='w-9' />
           </div>
         </div>
 
+        {/* Subproducts - Scrollable */}
         <div className='flex-1 overflow-y-auto px-4 pb-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]'>
-          <div className='grid grid-cols-2 gap-4 mt-6 pb-4'>
-            {combos.map(combo => {
-              const quantity = getComboQuantity(combo._id)
-
+          <div className='grid grid-cols-2 gap-4 cursor-pointer mt-8 pb-4'>
+            {subProductCategories.map(item => {
+              const quantity = getProductQuantity(item._id)
               return (
                 <div
-                  key={combo._id}
-                  className='relative overflow-hidden p-4 flex flex-col h-full '
+                  key={item._id}
+                  className='relative rounded-md overflow-hidden p-4 flex flex-col h-full' // Added h-full here
                 >
-                  <div className='w-full h-56 mb-2 rounded-sm overflow-hidden'>
-                    {combo.comboImage && (
-                      <img
-                        src={`${ImagePath}${combo.comboImage}`}
-                        alt={combo.comboName}
-                        className='w-full h-full object-cover'
-                        onClick={() => handleNavigate(combo)}
-                      />
+                  {/* Image */}
+                  <div className='w-full h-56 mb-2 overflow-hidden rounded-sm relative'>
+                    <img
+                      src={`${ImagePath}${item.image}`}
+                      alt={item.name}
+                      className='w-full h-full object-cover cursor-pointer'
+                      onClick={() => handleNavigate(item)}
+                    />
+
+                    {/* Light gray strip at the bottom of image for timeToPrepare */}
+                    {item.timeToPrepare && (
+                      <div className='absolute bottom-0 w-full bg-[#F4ECD9]/80 p-1 flex justify-center items-center gap-1'>
+                        <AlarmClock className='w-4 h-4 text-[#FA0303]' />
+                        <span className='text-[#FA0303] text-sm font-medium'>
+                          {item.timeToPrepare}
+                        </span>
+                      </div>
                     )}
                   </div>
 
-                  {/* Combo Name */}
-                  <h2 className='text-lg font-semibold mb-1'>
-                    {combo.comboName}
-                  </h2>
+                  {/* Name */}
+                  <h2 className='text-lg font-semibold mb-3'>{item.name}</h2>
 
-                  {/* Description */}
+                  {/* Description - Added flex-1 here */}
                   <p className='text-gray-600 text-sm mb-2 line-clamp-2 flex-1'>
-                    {combo.description}
+                    {item.description}
                   </p>
 
-                  {/* Price */}
+                  {/* Price moved here (just above Add button) */}
                   <div className='text-[#FA0303] font-bold text-right mb-3'>
-                    {combo.price} {t('ShoopingCart.KD')}
+                    {item.price} {t('ShoopingCart.KD')}
                   </div>
 
-                  {/* Add / Quantity */}
                   {quantity === 0 ? (
                     <button
-                      onClick={() =>
+                      onClick={() => {
+                        // Make sure brandId exists
+                        if (!localStorage.getItem('brandId')) {
+                          localStorage.setItem('brandId', item.brandId)
+                        }
+
                         addToCart({
-                          cartItemId: `combo-${combo._id}`,
-                          _id: combo._id,
-                          type: 'combo',
-                          name: combo.comboName,
-                          price: combo.price,
-                          image: combo.comboImage,
-                          items: combo.subproducts
+                          cartItemId: `product-${item._id}`,
+                          _id: item._id,
+                          brandId: item.brandId, // also include this
+                          product_id: item.product_id,
+                          type: 'product',
+                          name: item.name,
+                          price: item.price,
+                          image: item.image
                         })
-                      }
+                      }}
                       className='border border-[#FA0303] text-[#FA0303] px-4 rounded hover:bg-red-50 transition-colors font-medium w-full'
                     >
-                      + {t('ShoopingCart.Add Combo')}
+                      + {t('ShoopingCart.Add')}
                     </button>
                   ) : (
                     <div className='flex items-center justify-between rounded-md px-2 py-1'>
                       <button
                         onClick={() =>
-                          updateQuantity(`combo-${combo._id}`, quantity - 1)
+                          updateQuantity(`product-${item._id}`, quantity - 1)
                         }
                         className='w-4 h-4 flex items-center justify-center bg-white text-[#FA0303] border-2 border-[#FA0303] rounded-full hover:bg-red-50'
                       >
-                        −
+                        <Minus className='w-3 h-3' />
                       </button>
 
                       <span className='px-3 py-0.5 text-center font-medium text-red-500 text-sm'>
@@ -178,11 +166,11 @@ const Combo = () => {
 
                       <button
                         onClick={() =>
-                          updateQuantity(`combo-${combo._id}`, quantity + 1)
+                          updateQuantity(`product-${item._id}`, quantity + 1)
                         }
                         className='w-4 h-4 flex items-center justify-center bg-white text-[#FA0303] border-2 border-[#FA0303] rounded-full hover:bg-red-50'
                       >
-                        +
+                        <Plus className='w-3 h-3' />
                       </button>
                     </div>
                   )}
@@ -241,4 +229,4 @@ const Combo = () => {
   )
 }
 
-export default Combo
+export default Subproducts

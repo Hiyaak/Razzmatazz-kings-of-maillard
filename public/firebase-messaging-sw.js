@@ -125,14 +125,14 @@
 importScripts("https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js");
 importScripts("https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js");
 
-// Firebase config
+// Firebase config — must match src/firebase/firebaseConfig.jsx
 firebase.initializeApp({
-  apiKey: "AIzaSyB3csmb87BiG1wvTXwbbkN2ZUfK9QH0-Vw",
-  authDomain: "razzmatazz-e9feb.firebaseapp.com",
-  projectId: "razzmatazz-e9feb",
-  storageBucket: "razzmatazz-e9feb.firebasestorage.app",
-  messagingSenderId: "1011542027358",
-  appId: "1:1011542027358:web:e06b1e92611486f8e618cf",
+  apiKey: "AIzaSyB-HLjIoO4bqia8ndfXvMXkDMsd53Gx9Uk",
+  authDomain: "pushnotificationrazzmatazz.firebaseapp.com",
+  projectId: "pushnotificationrazzmatazz",
+  storageBucket: "pushnotificationrazzmatazz.firebasestorage.app",
+  messagingSenderId: "622773877166",
+  appId: "1:622773877166:web:d3ef5154b6e6ad6c9ef03f",
 });
 
 // Create messaging instance
