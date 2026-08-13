@@ -11,7 +11,7 @@ const Combo = () => {
   const navigate = useNavigate()
   const { t } = useTranslation()
   const { language } = useContext(LanguageContext)
-  const { cart, addToCart, updateQuantity } = useCart()
+  const { cart, addToCart, updateQuantity, getCartItemsCount } = useCart()
   const brandId = localStorage.getItem('brandId')
   const [combos, setCombos] = useState([])
   const [allSubProducts, setAllSubProducts] = useState([])
@@ -196,7 +196,6 @@ const Combo = () => {
 
         {/* Bottom Section */}
         {!(selectedMethod && (selectedArea || selectedGovernate)) ? (
-          // Location not selected — show "Select your location"
           <div className='p-3 bg-white flex-shrink-0'>
             <button
               onClick={() => navigate('/pickupdeviler')}
@@ -206,7 +205,6 @@ const Combo = () => {
             </button>
           </div>
         ) : (
-          // Location selected — show "Review Order"
           <div
             className='p-3 bg-white flex-shrink-0'
             onClick={handleReviewOrder}
@@ -215,7 +213,7 @@ const Combo = () => {
               {/* Left - Items Count */}
               <div className='flex items-center'>
                 <span className='bg-white/20 rounded-sm w-6 h-6 flex items-center justify-center text-sm'>
-                  {cart.length}
+                  {getCartItemsCount()}
                 </span>
               </div>
 

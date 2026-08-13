@@ -43,12 +43,6 @@ const Diy = () => {
     getProducts()
   }, [language])
 
-  // const handleProduct = (productId, productName) => {
-  //   navigate(
-  //     `/diyproducts/${encodeURIComponent(productName)}?productId=${productId}`
-  //   )
-  // }
-
   const handleProduct = productId => {
     navigate(`/diyproducts/${productId}`)
   }

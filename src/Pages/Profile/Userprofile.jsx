@@ -21,7 +21,6 @@ const Userprofile = () => {
   const [userAdress, setUserAdress] = useState([])
   const [showAddressModal, setShowAddressModal] = useState(false)
 
-  // ✅ NEW STATES FOR DELETE MODAL
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [deleteConfirmText, setDeleteConfirmText] = useState('')
 
@@ -99,7 +98,7 @@ const Userprofile = () => {
     }
   }
 
-  //  FIXED VERSION — deletes user & clears entire localStorage
+
   const handleAccountDelete = async () => {
     if (deleteConfirmText !== 'Delete') return
 
@@ -111,10 +110,8 @@ const Userprofile = () => {
       if (data.status) {
         toast.success('Account deleted successfully!')
 
-        // ✅ Clear ALL local storage data
         localStorage.clear()
 
-        // ✅ Redirect to home page
         navigate('/')
       } else {
         toast.error(data.message || 'Failed to delete account')
@@ -150,7 +147,7 @@ const Userprofile = () => {
       icon: <MdDelete className='w-5 h-5 text-[#FA0303]' />,
       label: t('profile.Delete account'),
       isDelete: true,
-      onClick: () => setShowDeleteModal(true) // ✅ OPEN MODAL
+      onClick: () => setShowDeleteModal(true)
     }
   ]
 

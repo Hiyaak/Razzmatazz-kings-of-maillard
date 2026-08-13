@@ -16,7 +16,6 @@ import { ChevronRight } from "lucide-react";
 const Placeorder = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  // const { cart } = useCart()
   const { cart, clearCart } = useCart();
   const isCatering = cart.some((item) => item.orderType === "catering");
 
@@ -52,7 +51,7 @@ const Placeorder = () => {
     cod: false,
     online: false,
   });
-  const [orderType, setOrderType] = useState("now"); // now | schedule
+  const [orderType, setOrderType] = useState("now");
   const [coupons, setCoupons] = useState([]);
   const [couponInput, setCouponInput] = useState("");
   const [selectedCoupon, setSelectedCoupon] = useState(null);
@@ -82,7 +81,7 @@ const Placeorder = () => {
         setUserAdress(data.addresses);
 
         if (data.addresses.length > 0) {
-          setSelectedAddress(data.addresses[0]._id); // default address
+          setSelectedAddress(data.addresses[0]._id);
         }
       } else {
         toast.error("Failed to load address");
@@ -149,7 +148,6 @@ const Placeorder = () => {
 
       const { selectedMethod, selectedAreaId } = locationData;
 
-      // Only call API if delivery method selected
       if (selectedMethod === "delivery" && selectedAreaId) {
         const { data } = await ApiService.get(
           `getDeliveryChargeByArea/${selectedAreaId}`,
@@ -184,7 +182,6 @@ const Placeorder = () => {
           online: onlineEnabled,
         });
 
-        // ✅ Auto select if only one is enabled
         if (codEnabled && !onlineEnabled) {
           setPaymentMethod("cash");
         }
@@ -193,7 +190,6 @@ const Placeorder = () => {
           setPaymentMethod("online");
         }
 
-        // ✅ If both enabled → default online
         if (codEnabled && onlineEnabled) {
           setPaymentMethod("online");
         }
@@ -215,7 +211,6 @@ const Placeorder = () => {
       if (data.success) {
         const now = new Date();
 
-        // ✅ Filter active + valid date coupons
         const validCoupons = data.coupons.filter((coupon) => {
           if (!coupon.isActive) return false;
 
@@ -229,12 +224,10 @@ const Placeorder = () => {
           return true;
         });
 
-        // ✅ Get subproduct ids from cart
         const cartSubProductIds = cart
-          .filter((item) => item.type === "product") // only normal products
+          .filter((item) => item.type === "product")
           .map((item) => String(item._id));
 
-        // ✅ Product-specific coupons (based on subProductIds)
         const subProductCoupons = validCoupons.filter((coupon) => {
           if (!coupon.subProductIds || coupon.subProductIds.length === 0)
             return false;
@@ -244,13 +237,11 @@ const Placeorder = () => {
           return cartSubProductIds.some((id) => couponSubIds.includes(id));
         });
 
-        // ✅ General coupons (no subProductIds)
         const generalCoupons = validCoupons.filter(
           (coupon) =>
             !coupon.subProductIds || coupon.subProductIds.length === 0,
         );
 
-        // ✅ Final decision logic
         if (subProductCoupons.length > 0) {
           setCoupons(subProductCoupons);
         } else {
@@ -320,7 +311,6 @@ const Placeorder = () => {
     (total, item) => total + item.price * item.quantity,
     0,
   );
-  // const total = subtotal + deliveryCharges
 
   let discount = 0;
 
@@ -365,19 +355,16 @@ const Placeorder = () => {
         return;
       }
 
-      // ✅ Validate branch before starting loader
       if (selectedMethod === "delivery" && !selectedBranchId) {
         toast.error("Please select branch");
         return;
       }
 
-      // ✅ Validate payment method
       if (!paymentMethod) {
         toast.error("Please select payment method");
         return;
       }
 
-      // ✅ Validate schedule time if calendar opened
       if (showCalendar) {
         if (!scheduledDate) {
           toast.error("Please select schedule date");
@@ -390,7 +377,6 @@ const Placeorder = () => {
         }
       }
 
-      // ✅ Start loader ONLY after validations
       setPlacingOrder(true);
 
       const hasCateringItem = cart.some(
@@ -415,21 +401,6 @@ const Placeorder = () => {
             };
           }
 
-          // if (item.type === "diycombo") {
-          //   if (!item.selectedDate || !item.selectedSlot) {
-          //     toast.error("Please select date & time for DIY item");
-          //     return null;
-          //   }
-
-          //   return {
-          //     itemType: "diy",
-          //     subproduct_id: item._id,
-          //     quantity: item.quantity,
-          //     diyDate: new Date(item.selectedDate).toISOString().split("T")[0],
-          //     diyTime: item.selectedSlot,
-          //   };
-          // }
-
           if (item.type === "diycombo") {
             if (!item.diyDate || !item.selectedSlot) {
               toast.error("Please select date & time for DIY item");
@@ -440,7 +411,7 @@ const Placeorder = () => {
               itemType: "diy",
               subproduct_id: item._id,
               quantity: item.quantity,
-              diyDate: item.diyDate, // ✅ FIXED
+              diyDate: item.diyDate,
               diyTime: item.selectedSlot,
             };
           }
@@ -534,18 +505,12 @@ const Placeorder = () => {
       const { data } = await ApiService.post("placeOrder", payload);
 
       if (data.status) {
-        // if (paymentMethod === 'cash') {
-        //   toast.success('Order placed successfully!')
-        //   navigate('/Myorders')
-        //   return
-        // }
-
         if (paymentMethod === "cash") {
           toast.success("Order placed successfully!");
 
-          clearCart(); // ✅ IMPORTANT FIX
+          clearCart();
 
-          navigate("/Myorders");
+          navigate("/myorders");
           return;
         }
 
@@ -561,7 +526,6 @@ const Placeorder = () => {
       console.log("PLACE ORDER ERROR:", error?.response?.data || error);
       toast.error("Something went wrong while placing your order.");
     } finally {
-      // ✅ FIX LOADER RESET
       setPlacingOrder(false);
     }
   };
@@ -811,7 +775,7 @@ const Placeorder = () => {
                 <Calendar
                   onChange={setScheduledDate}
                   value={scheduledDate}
-                  minDate={new Date()} // prevents past dates
+                  minDate={new Date()}
                 />
 
                 <div>
@@ -881,7 +845,7 @@ const Placeorder = () => {
                   value={couponInput}
                   onChange={(e) => setCouponInput(e.target.value)}
                   placeholder={t("PlaceOrder.Enter promotion code")}
-                  disabled={!!selectedCoupon} // disable when applied
+                  disabled={!!selectedCoupon}
                   className="flex-1 border-b border-gray-300 focus:border-red-500 outline-none text-gray-700 text-sm pb-1 disabled:opacity-60"
                 />
 

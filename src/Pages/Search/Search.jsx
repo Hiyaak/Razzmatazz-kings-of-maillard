@@ -16,7 +16,7 @@ const Search = () => {
   const [searchQuery, setSearchQuery] = useState('')
   const { cart, addToCart, updateQuantity } = useCart()
 
-  // Fetch all products once
+
   const getAllSubProducts = async () => {
     try {
       const { data } = await ApiService.get(
@@ -34,7 +34,7 @@ const Search = () => {
     getAllSubProducts()
   }, [])
 
-  // Filter products when typing
+
   const handleSearch = e => {
     const query = e.target.value.toLowerCase()
     setSearchQuery(query)
@@ -76,9 +76,14 @@ const Search = () => {
   }
 
   const getProductQuantity = productId => {
-    const cartItem = cart.find(item => item._id === productId)
+    const cartItem = cart.find(
+      item => item.cartItemId === `product-${productId}`
+    )
     return cartItem ? cartItem.quantity : 0
   }
+
+  const getCartItem = productId =>
+    cart.find(item => item.cartItemId === `product-${productId}`)
 
   return (
     <div className='flex flex-col md:flex-row min-h-screen'>
@@ -113,6 +118,7 @@ const Search = () => {
               <ul className='space-y-3'>
                 {filteredProducts.map(item => {
                   const quantity = getProductQuantity(item._id)
+                  const cartItem = getCartItem(item._id)
 
                   return (
                     <li
@@ -153,7 +159,19 @@ const Search = () => {
 
                             {quantity === 0 ? (
                               <button
-                                onClick={() => addToCart(item)}
+                                onClick={() =>
+                                  addToCart({
+                                    cartItemId: `product-${item._id}`,
+                                    _id: item._id,
+                                    brandId: item.brandId,
+                                    product_id: item.product_id,
+                                    type: 'product',
+                                    name: item.name,
+                                    price: item.price,
+                                    image: item.image,
+                                    maxQuantity: item.quantity
+                                  })
+                                }
                                 className='border border-red-500 text-red-500 px-2 py-1 rounded hover:bg-red-50 text-sm font-medium'
                               >
                                 + Add
@@ -162,7 +180,10 @@ const Search = () => {
                               <div className='flex items-center justify-between rounded-md px-2 py-1'>
                                 <button
                                   onClick={() =>
-                                    updateQuantity(item._id, quantity - 1)
+                                    updateQuantity(
+                                      cartItem.cartItemId,
+                                      quantity - 1
+                                    )
                                   }
                                   className='w-4 h-4 flex items-center justify-center bg-white text-[#FA0303] border-2 border-[#FA0303] rounded-full hover:bg-red-50 transition-colors leading-none text-lg'
                                 >
@@ -173,9 +194,16 @@ const Search = () => {
                                 </span>
                                 <button
                                   onClick={() =>
-                                    updateQuantity(item._id, quantity + 1)
+                                    updateQuantity(
+                                      cartItem.cartItemId,
+                                      quantity + 1
+                                    )
                                   }
-                                  className='w-4 h-4 flex items-center justify-center bg-white text-[#FA0303] border-2 border-[#FA0303] rounded-full hover:bg-red-50 transition-colors leading-none text-lg'
+                                  disabled={
+                                    item.quantity > 0 &&
+                                    quantity >= item.quantity
+                                  }
+                                  className='w-4 h-4 flex items-center justify-center bg-white text-[#FA0303] border-2 border-[#FA0303] rounded-full hover:bg-red-50 transition-colors leading-none text-lg disabled:opacity-40 disabled:cursor-not-allowed'
                                 >
                                   <Plus className='w-3 h-3' />
                                 </button>

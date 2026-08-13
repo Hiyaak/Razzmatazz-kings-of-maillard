@@ -17,9 +17,8 @@ const Usercheckout = () => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
-  const [userId, setUserId] = useState('') // Will fetch dynamically
+  const [userId, setUserId] = useState('')
 
-  // Initialize formData with profile data passed from Userprofile
   useEffect(() => {
     if (location.state?.profile) {
       const user = location.state.profile
@@ -28,7 +27,7 @@ const Usercheckout = () => {
         email: user.email || '',
         phone: user.mobileNumber ? String(user.mobileNumber) : ''
       })
-      setUserId(user._id || '') // use _id from profile if available
+      setUserId(user._id || '')
     }
   }, [location.state])
 

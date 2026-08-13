@@ -3,7 +3,6 @@ import ApiService from "../../Services/Apiservice";
 const API_URL = import.meta.env.VITE_API_URL;
 
 const Qrorder = () => {
-  // ✅ Get orderId from HashRouter
   const getOrderIdFromHash = () => {
     const hash = window.location.hash;
     const parts = hash.split("/");
@@ -15,10 +14,8 @@ const Qrorder = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // ✅ Language state
   const [lang, setLang] = useState("en");
 
-  // ✅ Optional: persist language
   useEffect(() => {
     const savedLang = localStorage.getItem("lang");
     if (savedLang) setLang(savedLang);
@@ -60,35 +57,6 @@ const Qrorder = () => {
     if (path.startsWith("http")) return path;
     return `${API_URL}uploads/${path}`;
   };
-
-  // const fetchQRData = async (id) => {
-  //   try {
-  //     // const response = await fetch(
-  //     //   `https://dev.razzmatazz-hospitality.com/api/qr/order/${id}`,
-  //     // );
-  //     const response = await ApiService.get(`qr/order/${id}`);
-
-  //     const result = await response.json();
-
-  //     if (result.status) {
-  //       setData(result.data);
-  //     } else {
-  //       setError("Data not found");
-  //     }
-  //   } catch (err) {
-  //     console.error(err);
-  //     setError("Something went wrong");
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
-  // ✅ Image helper
-  // const getImageUrl = (path) => {
-  //   if (!path) return "";
-  //   if (path.startsWith("http")) return path;
-  //   return `https://dev.razzmatazz-hospitality.com/uploads/${path}`;
-  // };
 
   if (loading) return <h3 style={{ textAlign: "center" }}>Loading...</h3>;
 
@@ -152,36 +120,11 @@ const Qrorder = () => {
         />
       )}
 
-      {/* LOCATION IMAGE */}
-      {/* {branch?.loc_image && (
-        <img
-          src={getImageUrl(branch.loc_image)}
-          alt="location"
-          width="200"
-          style={{ marginBottom: 10 }}
-        />
-      )} */}
-
-      {/* ✅ LOCATION NAME (FIXED) */}
-      {/* <h3>
-        {lang === "en"
-          ? branch?.locname || "No Location"
-          : branch?.locname || "لا يوجد موقع"}
-      </h3> */}
       <h3>
         {lang === "en"
           ? branch?.name || "No Branch Name"
           : branch?.name || "لا يوجد اسم"}
       </h3>
-
-      {/* LOCATION LINK */}
-      {/* {branch?.url && (
-        <div style={{ marginBottom: 10 }}>
-          <a href={branch.url} target="_blank" rel="noreferrer">
-            {lang === "en" ? "Open Location" : "افتح الموقع"}
-          </a>
-        </div>
-      )} */}
 
       {branch?.url && (
         <div className="mb-2">

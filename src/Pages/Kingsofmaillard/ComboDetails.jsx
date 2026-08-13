@@ -11,7 +11,7 @@ const ComboDetails = () => {
 
   const navigate = useNavigate()
   const location = useLocation()
-  const { cart, addToCart, updateQuantity } = useCart()
+  const { cart, addToCart, updateQuantity, getCartItemsCount } = useCart()
   const combo = location.state?.combo
 
   const cartItem = cart.find(item => item.cartItemId === `combo-${combo?._id}`)
@@ -139,7 +139,6 @@ const ComboDetails = () => {
           </div>
 
           {!(selectedMethod && (selectedArea || selectedGovernate)) ? (
-            // Location not selected — show "Select your location"
             <div className='p-3 bg-white flex-shrink-0'>
               <button
                 onClick={() => navigate('/pickupdeviler')}
@@ -149,7 +148,6 @@ const ComboDetails = () => {
               </button>
             </div>
           ) : (
-            // Location selected — show "Review Order"
             <div
               className='p-3 bg-white flex-shrink-0'
               onClick={handleReviewOrder}
@@ -158,7 +156,7 @@ const ComboDetails = () => {
                 {/* Left - Items Count */}
                 <div className='flex items-center'>
                   <span className='bg-white/20 rounded-sm w-6 h-6 flex items-center justify-center text-sm'>
-                    {cart.length}
+                    {getCartItemsCount()}
                   </span>
                 </div>
 

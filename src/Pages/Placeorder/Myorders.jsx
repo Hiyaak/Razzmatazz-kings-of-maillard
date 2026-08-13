@@ -28,7 +28,6 @@ const Myorders = () => {
 
   const [cancelReason, setCancelReason] = useState("");
 
-  // ✅ Verify Payment
   const verifyPayment = async (tapId) => {
     try {
       const { data } = await ApiService.post("getPaymentData", {
@@ -37,13 +36,6 @@ const Myorders = () => {
 
       if (data.status) {
         setPaymentStatus(data.payment_status);
-
-        // if (data.payment_status === 'CAPTURED') {
-        //   toast.success('Payment Successful')
-        //   clearCart()
-        // } else {
-        //   toast.error('Payment Failed')
-        // }
 
         if (data.payment_status === "CAPTURED") {
           toast.success("Payment successful");
@@ -72,7 +64,6 @@ const Myorders = () => {
     }
   };
 
-  // ✅ Fetch Orders
   const getOrders = async () => {
     try {
       const storedBrandId = localStorage.getItem("brandId");
@@ -98,12 +89,10 @@ const Myorders = () => {
           ? data.orders.map((order) => ({
               ...order,
 
-              // ✅ normalize totals safely
               finalTotal: order.finalTotal || 0,
               totalAmount: order.totalAmount || 0,
               deliveryCharge: order.deliveryCharge || 0,
 
-              // ✅ IMPORTANT: use items instead of products
               items: Array.isArray(order.items)
                 ? order.items.map((item) => ({
                     ...item,
@@ -175,7 +164,7 @@ const Myorders = () => {
       const payload = {
         userId: userId,
         orderId: selectedOrderId,
-        name: "Customer", // you can replace with actual user name
+        name: "Customer",
         comment: feedback,
         rating: Number(rating),
       };
@@ -199,7 +188,6 @@ const Myorders = () => {
     }
   };
 
-  // ✅ Cancel Order
   const handleCancelOrder = async () => {
     try {
       if (!cancelReason.trim()) {
@@ -244,7 +232,6 @@ const Myorders = () => {
     }
   };
 
-  // ✅ Request Refund
   const requestRefund = async (orderId) => {
     try {
       const storedBrandId = localStorage.getItem("brandId");
@@ -268,10 +255,8 @@ const Myorders = () => {
       const { data } = await ApiService.post("order/request-refund", payload);
 
       if (data?.status) {
-        // ✅ Show backend message
         toast.success(data.message);
 
-        // ✅ Update order locally (no need to refetch)
         setOrders((prev) =>
           prev.map((order) =>
             order._id === orderId
@@ -290,7 +275,6 @@ const Myorders = () => {
     }
   };
 
-  // ✅ Loading Screen
   if (loading) {
     return (
       <div className="flex flex-col md:flex-row min-h-screen">
@@ -344,7 +328,6 @@ const Myorders = () => {
             </p>
           ) : (
             orders.map((order) => {
-              // ✅ catering uses totalAmount
               const totalPrice =
                 order.totalAmount || order.finalTotal || order.totalPrice;
 
@@ -438,113 +421,13 @@ const Myorders = () => {
                       )}
                   </div>
 
-                  {/* Cancel Button */}
-                  {/* {(() => {
-                    // ✅ CASH payment logic
-                    if (order.paymentMethod === 'cash') {
-                      // ❌ If already cancelled → show nothing
-                      if (order.status === 'CancelledByUser') {
-                        return (
-                          <div className='mt-3 w-full bg-red-100 text-red-700 py-2 rounded-lg text-center font-medium'>
-                            {t('MyOrders.Cancelled')}
-                          </div>
-                        )
-                      }
-
-                      if (
-                        order.status === 'CancelledByUser' ||
-                        order.status === 'Rejected'
-                      ) {
-                        return (
-                          <div className='mt-3 w-full bg-red-100 text-red-700 py-2 rounded-lg text-center font-medium'>
-                            {t('MyOrders.Cancelled')}
-                          </div>
-                        )
-                      }
-
-                      // ❌ Delivered → no cancel
-                      if (order.status === 'Delivered') {
-                        return null
-                      }
-
-                      // ✅ Otherwise show cancel button
-                      return (
-                        <button
-                          onClick={() => {
-                            setSelectedOrderId(order._id)
-                            setShowCancelModal(true)
-                          }}
-                          disabled={cancellingId === order._id}
-                          className='mt-3 w-full bg-red-500 text-white py-2 rounded-lg hover:bg-red-600 disabled:opacity-50'
-                        >
-                          {cancellingId === order._id
-                            ? t('MyOrders.Cancelling')
-                            : t('MyOrders.Cancel Order')}
-                        </button>
-                      )
-                    }
-
-                    // ✅ ONLINE payments logic
-                    switch (order.status) {
-                      case 'CancelledByUser':
-                        return (
-                          <button
-                            onClick={() => requestRefund(order._id)}
-                            className='mt-3 w-full bg-yellow-500 text-white py-2 rounded-lg hover:bg-yellow-600'
-                          >
-                            {t('MyOrders.Request Refund')}
-                          </button>
-                        )
-
-                      case 'Refund Requested':
-                        return (
-                          <div className='mt-3 w-full bg-yellow-100 text-yellow-700 py-2 rounded-lg text-center font-medium'>
-                            {t('MyOrders.Refund Requested')}
-                          </div>
-                        )
-
-                      case 'Refunded':
-                        return (
-                          <div className='mt-3 w-full bg-green-100 text-green-700 py-2 rounded-lg text-center font-medium'>
-                            {t('MyOrders.Refunded')}
-                          </div>
-                        )
-
-                      case 'Rejected':
-                        return (
-                          <div className='mt-3 w-full bg-red-100 text-red-700 py-2 rounded-lg text-center font-medium'>
-                            {t('MyOrders.Order Rejected')} <br />
-                            {t('MyOrders.Amount Will Be Refunded')}
-                          </div>
-                        )
-
-                      case 'Delivered':
-                        return null
-
-                      default:
-                        return (
-                          <button
-                            onClick={() => cancelOrder(order._id)}
-                            disabled={cancellingId === order._id}
-                            className='mt-3 w-full bg-red-500 text-white py-2 rounded-lg hover:bg-red-600 disabled:opacity-50'
-                          >
-                            {cancellingId === order._id
-                              ? t('MyOrders.Cancelling')
-                              : t('MyOrders.Cancel Order')}
-                          </button>
-                        )
-                    }
-                  })()} */}
-                  {/* Cancel Button */}
                  <div className="mt-3">
-  {/* ❌ Failed ONLINE payment */}
   {order.paymentMethod === "online" &&
   order.paymentStatus !== "CAPTURED" ? (
     <div className="w-full bg-red-100 text-red-700 py-2 rounded-lg text-center font-medium">
       Payment timed out. Please try again
     </div>
   ) : order.paymentMethod === "cash" ? (
-    // 💵 CASH LOGIC
     order.status === "CancelledByUser" ||
     order.status === "Rejected" ? (
       <div className="w-full bg-red-100 text-red-700 py-2 rounded-lg text-center font-medium">
@@ -565,7 +448,6 @@ const Myorders = () => {
       </button>
     )
   ) : (
-    // 💳 ONLINE SUCCESS FLOW
     <>
       {order.status === "CancelledByUser" ? (
         <button

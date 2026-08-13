@@ -82,7 +82,7 @@ const Contact = () => {
     getReviews()
   }, [language])
 
-  // Handle input changes
+
   const handleInputChange = e => {
     const { name, value } = e.target
     setFeedback(prev => ({
@@ -91,7 +91,7 @@ const Contact = () => {
     }))
   }
 
-  // Handle rating (emoji click)
+
   const handleRatingChange = value => {
     setFeedback(prev => ({
       ...prev,
@@ -99,7 +99,7 @@ const Contact = () => {
     }))
   }
 
-  // Submit feedback
+
   const handleSendFeedback = async () => {
     if (!feedback.comment.trim()) {
       toast.error('Please enter your feedback comment.')

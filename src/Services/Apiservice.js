@@ -1,9 +1,4 @@
 import axios from 'axios'
-import { data } from 'react-router-dom'
-
-// export const ImagePath =
-//   'https://recessbucket.s3.ap-south-1.amazonaws.com/attachments/'
-
 
 export const ImagePath =
  "https://razzmatazz-assets.s3.eu-north-1.amazonaws.com/attachments/"

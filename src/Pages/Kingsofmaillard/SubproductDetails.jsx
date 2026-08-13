@@ -14,7 +14,7 @@ const SubproductDetails = () => {
 
   const [selectedDate, setSelectedDate] = useState(new Date())
   const [disabledDates, setDisabledDates] = useState([])
-  const { cart, addToCart, updateQuantity } = useCart()
+  const { cart, addToCart, updateQuantity, getCartItemsCount } = useCart()
   const product = location.state?.product
 
   console.log('Product:', product)
@@ -36,7 +36,7 @@ const SubproductDetails = () => {
     const fetchMonthlyReport = async () => {
       try {
         const year = selectedDate.getFullYear()
-        const month = selectedDate.getMonth() + 1 // JS month starts from 0
+        const month = selectedDate.getMonth() + 1
 
         const response = await ApiService.post('getMonthlyDiyComboReport', {
           brandId: product?.brandId,
@@ -125,7 +125,8 @@ const SubproductDetails = () => {
                       type: 'product',
                       name: product.name,
                       price: product.price,
-                      image: product.image
+                      image: product.image,
+                      maxQuantity: product.quantity
                     })
                   }
                   className='px-4 py-1 border border-red-600 text-red-600 rounded-full font-semibold mr-4'
@@ -147,9 +148,16 @@ const SubproductDetails = () => {
 
                   <button
                     onClick={() =>
-                      updateQuantity(cartItem.cartItemId, quantity + 1)
+                      updateQuantity(
+                        cartItem.cartItemId,
+                        quantity + 1,
+                        product.quantity
+                      )
                     }
-                    className='px-3 py-1 text-red-600 font-bold'
+                    disabled={
+                      product?.quantity > 0 && quantity >= product.quantity
+                    }
+                    className='px-3 py-1 text-red-600 font-bold disabled:opacity-40 disabled:cursor-not-allowed'
                   >
                     +
                   </button>
@@ -177,7 +185,6 @@ const SubproductDetails = () => {
           </div>
 
           {!(selectedMethod && (selectedArea || selectedGovernate)) ? (
-            // Location not selected — show "Select your location"
             <div className='p-3 bg-white flex-shrink-0'>
               <button
                 onClick={() => navigate('/pickupdeviler')}
@@ -187,7 +194,6 @@ const SubproductDetails = () => {
               </button>
             </div>
           ) : (
-            // Location selected — show "Review Order"
             <div
               className='p-3 bg-white flex-shrink-0'
               onClick={handleReviewOrder}
@@ -196,7 +202,7 @@ const SubproductDetails = () => {
                 {/* Left - Items Count */}
                 <div className='flex items-center'>
                   <span className='bg-white/20 rounded-sm w-6 h-6 flex items-center justify-center text-sm'>
-                    {cart.length}
+                    {getCartItemsCount()}
                   </span>
                 </div>
 

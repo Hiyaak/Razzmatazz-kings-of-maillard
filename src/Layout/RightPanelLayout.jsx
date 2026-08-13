@@ -88,13 +88,3 @@ const RightPanelLayout = () => {
 }
 
 export default RightPanelLayout
-
-{
-  /* Notification / Bell Icon */
-}
-// <button
-//   onClick={handleNotificationClick}
-//   className='w-10 h-10 bg-white text-black rounded-full flex items-center justify-center hover:bg-gray-100 transition-all'
-// >
-//   <BellMinus className='w-5 h-5' />
-// </button>

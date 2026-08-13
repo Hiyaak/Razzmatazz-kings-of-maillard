@@ -25,7 +25,7 @@ const DiyProductDetails = () => {
 
   console.log('productid', product.product_id)
 
-  const { cart, addToCart, updateQuantity } = useCart()
+  const { cart, addToCart, updateQuantity, getCartItemsCount } = useCart()
   const brandId = localStorage.getItem('brandId')
 
   const { selectedMethod, selectedGovernate, selectedArea } = JSON.parse(
@@ -40,30 +40,21 @@ const DiyProductDetails = () => {
         const year = selectedDate.getFullYear()
         const month = selectedDate.getMonth() + 1
 
-        // const response = await ApiService.post('getMonthlyDiyComboReport', {
-        //   brandId: product.brandId,
-        //   productId: product.product_id,
-        //   year,
-        //   month
-        // })
-
         const response = await ApiService.post('getMonthlyDiyComboReport', {
   brandId: product.brandId,
   productId: product.product_id,
-  subProductId: product._id,   // ✅ ADD THIS
+  subProductId: product._id,
   year,
   month
 })
 
         if (!response.data?.status) return
 
-        // ✅ reset
         setBlockedDates([])
         setBlockedSlots({})
         setBlockedMonths([])
         setIsMonthFullyBlocked(false)
 
-        // ✅ store report ONCE
         setReportData(response.data.report || [])
 
         const fullyBlockedDates = []
@@ -71,12 +62,10 @@ const DiyProductDetails = () => {
         const monthsBlocked = []
 
         response.data.diyBlocks.forEach(block => {
-          // ✅ blocked month
           if (block.blockedMonth?.length) {
             monthsBlocked.push(...block.blockedMonth)
           }
 
-          // ✅ blocked dates
           block.blockedDate.forEach(date => {
             const dateKey = new Date(date).toDateString()
 
@@ -90,7 +79,6 @@ const DiyProductDetails = () => {
 
         setBlockedMonths(monthsBlocked)
 
-        // ✅ full month block
         if (monthsBlocked.includes(month)) {
           setIsMonthFullyBlocked(true)
           return
@@ -175,38 +163,20 @@ const DiyProductDetails = () => {
       ).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`
     : null
 
-  // const isOrderLimitExceeded = (reportData || []).some(
-  //   item => item.date === selectedDateKey && item.exceeded
-  // )
-
   const selectedReport = (reportData || []).find(
   item => item.date === selectedDateKey
 )
 
 const isOrderLimitExceeded = selectedReport?.exceeded || false
-const limitType = selectedReport?.limitType   // "product" OR "subproduct"
+const limitType = selectedReport?.limitType
 
   const slotsForSelectedDate =
     blockedSlots[new Date(selectedDate).toDateString()] || []
 
-  // const isAddDisabled =
-  //   isDateDisabled ||
-  //   isOrderLimitExceeded ||
-  //   (selectedSlot &&
-  //     slotsForSelectedDate.some(slot => {
-  //       const selectedStart = selectedSlot.split(' - ')[0]
-  //       return slot.startTime === selectedStart
-  //     }))
   const isAddDisabled =
   isDateDisabled ||
-
-  // ✅ PRODUCT LIMIT → block everything
   (isOrderLimitExceeded && limitType === "product") ||
-
-  // ✅ SUBPRODUCT LIMIT → block only this item
   (isOrderLimitExceeded && limitType === "subproduct") ||
-
-  // ✅ SLOT BLOCK
   (selectedSlot &&
     slotsForSelectedDate.some(slot => {
       const selectedStart = selectedSlot.split(' - ')[0]
@@ -275,10 +245,6 @@ const limitType = selectedReport?.limitType   // "product" OR "subproduct"
                         return toast.error('Please select a date')
                       }
 
-                      // if (isOrderLimitExceeded) {
-                      //   return toast.error('Order limit reached for this date')
-                      // }
-
                       if (isOrderLimitExceeded) {
   if (limitType === "product") {
     return toast.error('Product limit reached for this date')
@@ -309,14 +275,13 @@ const limitType = selectedReport?.limitType   // "product" OR "subproduct"
                         image: product.image,
                         type: 'diycombo',
                         quantity: 1,
-                        // selectedDate,
-                        diyDate: selectedDateKey, 
-                        selectedSlot
+                        diyDate: selectedDateKey,
+                        selectedSlot,
+                        maxQuantity: product.quantity
                       })
                     }}
                     className={`border px-4 py-1 rounded-full font-medium transition-colors
     ${
-      // isDateDisabled
       isAddDisabled
         ? 'border-gray-300 text-gray-300 cursor-not-allowed'
         : 'border-[#FA0303] text-[#FA0303] hover:bg-red-50'
@@ -340,9 +305,16 @@ const limitType = selectedReport?.limitType   // "product" OR "subproduct"
 
                     <button
                       onClick={() =>
-                        updateQuantity(`diycombo-${product._id}`, quantity + 1)
+                        updateQuantity(
+                          `diycombo-${product._id}`,
+                          quantity + 1,
+                          product.quantity
+                        )
                       }
-                      className='px-3 py-1 text-red-600 font-bold'
+                      disabled={
+                        product?.quantity > 0 && quantity >= product.quantity
+                      }
+                      className='px-3 py-1 text-red-600 font-bold disabled:opacity-40 disabled:cursor-not-allowed'
                     >
                       +
                     </button>
@@ -475,7 +447,6 @@ const limitType = selectedReport?.limitType   // "product" OR "subproduct"
           </div>
 
           {!(selectedMethod && (selectedArea || selectedGovernate)) ? (
-            // Location not selected — show "Select your location"
             <div className='p-3 bg-white flex-shrink-0'>
               <button
                 onClick={() => navigate('/pickupdeviler')}
@@ -485,7 +456,6 @@ const limitType = selectedReport?.limitType   // "product" OR "subproduct"
               </button>
             </div>
           ) : (
-            // Location selected — show "Review Order"
             <div
               className='p-3 bg-white flex-shrink-0'
               onClick={handleReviewOrder}
@@ -494,7 +464,7 @@ const limitType = selectedReport?.limitType   // "product" OR "subproduct"
                 {/* Left - Items Count */}
                 <div className='flex items-center'>
                   <span className='bg-white/20 rounded-sm w-6 h-6 flex items-center justify-center text-sm'>
-                    {cart.length}
+                    {getCartItemsCount()}
                   </span>
                 </div>
 

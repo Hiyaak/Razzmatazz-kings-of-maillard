@@ -15,7 +15,7 @@ import { useTranslation } from 'react-i18next'
 
 const ShoppingCartPage = () => {
   const navigate = useNavigate()
-  const { cart, updateQuantity, removeFromCart } = useCart()
+  const { cart, updateQuantity, removeFromCart, getCartItemsCount } = useCart()
   const [specialRemark, setSpecialRemark] = useState('')
   
   const [isSpecialRemarksEnabled, setIsSpecialRemarksEnabled] = useState(false)
@@ -113,7 +113,6 @@ const ShoppingCartPage = () => {
   const map = new Map();
 
   cart.forEach((item) => {
-    // 👉 For catering use packageId as unique
     const key =
       item.type === "catering"
         ? `catering-${item.packageId}`
@@ -152,28 +151,6 @@ const ShoppingCartPage = () => {
 
         {/* Scrollable Content */}
         <div className='flex-1 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]'>
-          {/* <div>
-            <div className='bg-gray-100 p-4'>
-              <h2 className='text-base font-semibold text-gray-800'>
-                Promotions
-              </h2>
-            </div>
-
-         
-            <div className='bg-white p-5 border-gray-300'>
-              <div className='flex items-center'>
-                <PenLine className='w-5 h-5 text-gray-500 mr-3' />
-
-                <input
-                  type='text'
-                  placeholder='Enter promotion code'
-                  className='w-full bg-transparent border-b border-gray-300 focus:border-red-500 outline-none focus:ring-0 text-gray-700 placeholder-gray-500 text-sm pb-1'
-                />
-              </div>
-            </div>
-          </div> */}
-
-          {/* Special Remarks Section */}
           {isSpecialRemarksEnabled && (
             <div>
               <div className='bg-gray-100 p-4'>
@@ -207,7 +184,6 @@ const ShoppingCartPage = () => {
             </div>
 
             {cart.length === 0 ? (
-              // Empty Cart State
               <div className='flex px-4 gap-5 py-10 bg-white'>
                 {/* Left: Shopping Icon */}
                 <RiShoppingBasketLine className='w-16 h-16 text-red-300 relative top-3' />
@@ -232,9 +208,7 @@ const ShoppingCartPage = () => {
                 </div>
               </div>
             ) : (
-              // Cart Items List
               <div className='space-y-4 mt-1 px-4 border-b border-gray-200'>
-                {/* {cart.map(item => ( */}
                 {uniqueCart.map(item => (
                   <div
                     key={item.cartItemId}
@@ -370,10 +344,15 @@ const ShoppingCartPage = () => {
                               item.type !== 'catering' &&
                               updateQuantity(item.cartItemId, item.quantity + 1)
                             }
-                            disabled={item.type === 'catering'}
+                            disabled={
+                              item.type === 'catering' ||
+                              (item.maxQuantity > 0 &&
+                                item.quantity >= item.maxQuantity)
+                            }
                             className={`w-4 h-4 flex items-center justify-center border-2 rounded-full transition-colors
     ${
-      item.type === 'catering'
+      item.type === 'catering' ||
+      (item.maxQuantity > 0 && item.quantity >= item.maxQuantity)
         ? 'border-gray-300 text-gray-300 cursor-not-allowed'
         : 'border-[#FA0303] text-[#FA0303] hover:bg-red-50'
     }`}
@@ -401,7 +380,6 @@ const ShoppingCartPage = () => {
         {/* Order Summary - Fixed at Bottom (No Scroll) */}
         {cart.length > 0 &&
           (!(selectedMethod && (selectedArea || selectedGovernate)) ? (
-            // ❌ Location not selected — show "Select your location"
             <div className='p-3 border-t border-gray-200 bg-white flex-shrink-0'>
               <button
                 onClick={() => navigate('/pickupdeviler')}
@@ -411,7 +389,6 @@ const ShoppingCartPage = () => {
               </button>
             </div>
           ) : (
-            // ✅ Location selected — show " checkout"
             <div
               className='p-3  bg-white flex-shrink-0'
               onClick={handleGotocheckout}
@@ -420,7 +397,7 @@ const ShoppingCartPage = () => {
                 {/* Left - Items Count */}
                 <div className='flex items-center'>
                   <span className='bg-white/20 rounded-sm w-6 h-6 flex items-center justify-center text-sm'>
-                    {cart.length}
+                    {getCartItemsCount()}
                   </span>
                 </div>
 

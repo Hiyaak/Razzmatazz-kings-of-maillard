@@ -11,7 +11,7 @@ const Otpverification = () => {
   const storedBrandId = localStorage.getItem('brandId')
 
   const pendingEmail = sessionStorage.getItem('pendingEmail')
-  const pendingOtp = sessionStorage.getItem('pendingOtp') // for testing display only
+  const pendingOtp = sessionStorage.getItem('pendingOtp')
 
   const handleVerifyOtp = async () => {
     if (!otpInput) {
@@ -20,7 +20,6 @@ const Otpverification = () => {
     }
 
     try {
-      // 1) Verify OTP
       const verifyPayload = {
         email: pendingEmail,
         otp: otpInput
@@ -39,7 +38,6 @@ const Otpverification = () => {
         return
       }
 
-      // 2) Get verified userId
       const userId = data.userId
 
       if (!userId) {
@@ -51,17 +49,14 @@ const Otpverification = () => {
       localStorage.setItem(`registredUserId_${storedBrandId}`, userId)
       console.log('Saved registredUserId:', userId)
 
-      // 3) Get local FCM Token
       const fcmToken = localStorage.getItem('fcmToken')
       console.log('local fcmToken:', fcmToken)
 
-      // 4) Update backend with correct payload
       if (fcmToken) {
         try {
-          // Backend expects:  { user_id , fcmToken }
           const updatePayload = {
             user_id: userId,
-            fcmToken: fcmToken // ✔ FIXED
+            fcmToken: fcmToken
           }
 
           console.log('Calling updateUserToken with:', updatePayload)
@@ -94,7 +89,6 @@ const Otpverification = () => {
         toast.info('OTP verified but no saved FCM token found.')
       }
 
-      // 5) Cleanup and redirect
       sessionStorage.removeItem('pendingOtp')
       sessionStorage.removeItem('pendingEmail')
 

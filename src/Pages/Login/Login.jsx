@@ -86,7 +86,6 @@ const ContactInfoForm = () => {
         {/* Content Area */}
         <div className='flex-1 flex flex-col items-center justify-start px-6 py-8 md:py-12'>
           {!showGuestForm ? (
-            // Initial View - Benefits and Buttons
             <>
               <div className='w-full max-w-md mx-auto'>
                 {/* Icon */}
@@ -174,7 +173,6 @@ const ContactInfoForm = () => {
               </div>
             </>
           ) : (
-            // Guest Form View - Only Input Fields
             <>
               <div className='w-full max-w-md'>
                 {/* Icon */}

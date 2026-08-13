@@ -37,7 +37,7 @@ const Adress = () => {
   )
   const guestUserId = sessionStorage.getItem(`guestUserId_${storedBrandId}`)
 
-  // Get location for this brand
+
   useEffect(() => {
     const storedData = JSON.parse(
       localStorage.getItem(`selectedLocation_${storedBrandId}`) || '{}'
@@ -218,7 +218,6 @@ const Adress = () => {
                     className='text-sm font-semibold text-gray-700 flex items-center justify-center gap-1'
                   >
                     <span>{t('brand.Change')}</span>
-                    {/* <FaGreaterThan /> */}
                   </button>
                 </div>
               ) : (

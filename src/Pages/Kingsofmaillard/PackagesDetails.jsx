@@ -102,7 +102,7 @@ const PackageDetails = () => {
     const date = new Date()
     date.setHours(hour)
     date.setMinutes(minute)
-    date.setHours(date.getHours() + 1) // add 1 hour
+    date.setHours(date.getHours() + 1)
 
     return date.toLocaleTimeString('en-US', {
       hour: '2-digit',
@@ -113,8 +113,6 @@ const PackageDetails = () => {
 
   const cartItemIdFromState = location.state?.cartItemId
   const isEdit = location.state?.isEdit
-
-  // const existingItem = cart.find(item => item.cartItemId === cartItemId)
 
   const scrollLeft = () => {
     timeScrollRef.current?.scrollBy({
@@ -236,15 +234,12 @@ const PackageDetails = () => {
 
     if (!existingItem) return
 
-    // 🔥 Prefill everything
     setSelectedDate(new Date(existingItem.date))
     setSelectedSlot(existingItem.time)
     setSpecialRequest(existingItem.specialInstructions || '')
 
-    // ✅ Prefill Extra Persons
     setExtraPersons(existingItem.extraPersons || 0)
 
-    // selections
     const prefilledOptions = {}
     const prefilledAdditional = {}
 
@@ -430,11 +425,9 @@ const PackageDetails = () => {
           {/* Categories */}
           {[...(packageData?.package?.categories || [])]
             .sort((a, b) => {
-              // 1️⃣ Additional Services always last
               if (a.name === 'Addittional Services') return 1
               if (b.name === 'Addittional Services') return -1
 
-              // 2️⃣ Yes/No categories after normal categories
               const aIsYesNo = a.items?.[0]?.isYesNoType
               const bIsYesNo = b.items?.[0]?.isYesNoType
 
@@ -730,9 +723,6 @@ const PackageDetails = () => {
                 return toast.error('Please select date and time')
               }
 
-              // ===============================
-              // ✅ STORE ID + NAME
-              // ===============================
               const formattedSelections = {}
 
               packageData?.package?.categories?.forEach(category => {
@@ -741,7 +731,6 @@ const PackageDetails = () => {
                 const selected = selectedOptions[category.id]
                 if (selected === undefined) return
 
-                // YES / NO CATEGORY
                 if (category.items?.[0]?.isYesNoType) {
                   const item = category.items[0]
 
@@ -752,13 +741,12 @@ const PackageDetails = () => {
                         id: item.id,
                         name: item.name,
                         isYesNoType: true,
-                        selectedValue: selected // ✅ TRUE or FALSE
+                        selectedValue: selected
                       }
                     ]
                   }
                 }
 
-                // NORMAL CATEGORY
                 else if (Array.isArray(selected)) {
                   formattedSelections[category.id] = {
                     name: category.name,
@@ -772,7 +760,6 @@ const PackageDetails = () => {
                   }
                 }
 
-                // SINGLE SELECTION
                 else {
                   const found = category.items.find(
                     item => item.id === selected
@@ -791,9 +778,7 @@ const PackageDetails = () => {
                   }
                 }
               })
-              // ===============================
-              // ✅ ADDITIONAL SERVICES (ID + NAME)
-              // ===============================
+
               const formattedAdditionalServices = {}
 
               const additionalCategory = packageData?.package?.categories?.find(
@@ -815,33 +800,6 @@ const PackageDetails = () => {
                   }
                 }
               })
-
-              // const cartPayload = {
-              //   cartItemId: isEdit
-              //     ? cartItemIdFromState
-              //     : `catering-${packageData.package.id}-${Date.now()}`,
-              //   type: 'catering',
-              //   orderType: 'catering',
-
-              //   packageId: packageData.package.id,
-              //   brandId: packageData.brand?.id,
-              //   persons: packageData.package.persons,
-
-              //   name: packageData.package.name,
-              //   image: packageData.package.images?.[0],
-
-              //   selections: formattedSelections,
-              //   additionalServices: formattedAdditionalServices,
-
-              //   date: selectedDate,
-              //   time: selectedSlot,
-              //   specialInstructions: specialRequest,
-              //   extraPersons,
-              //   extraPersonPrice,
-
-              //   price: finalTotal,
-              //   quantity: 1
-              // }
 
               const cartPayload = {
   cartItemId: isEdit

@@ -4,7 +4,7 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        quicksand: ['Quicksand', 'sans-serif'], // 👈 Added custom font
+        quicksand: ['Quicksand', 'sans-serif'],
       },
     },
   },

@@ -10,35 +10,6 @@ const Getnotification = () => {
   const [loading, setLoading] = useState(true)
   const navigate = useNavigate()
 
-  // const fetchNotifications = async () => {
-  //   try {
-  //     const storedBrandId = localStorage.getItem('brandId')
-  //     const userIdKey = `registredUserId_${storedBrandId}`
-  //     const userId = localStorage.getItem(userIdKey)
-
-  //     if (!userId) {
-  //       setLoading(false)
-  //       return
-  //     }
-
-  //     const response = await fetch(
-  //       `http://13.126.81.242:5001/getUserNotifications/${userId}`,
-  //       { method: 'GET' }
-  //     )
-
-  //     const data = await response.json()
-
-  //     if (data.status) {
-  //       setNotifications(data.notifications || [])
-  //     } else {
-  //       setNotifications([])
-  //     }
-  //   } catch (error) {
-  //     console.error('Fetch Error:', error)
-  //   } finally {
-  //     setLoading(false)
-  //   }
-  // }
   const fetchNotifications = async () => {
     try {
       const storedBrandId = localStorage.getItem('brandId')
@@ -68,7 +39,7 @@ const Getnotification = () => {
     fetchNotifications()
   }, [])
 
-  // ✅ Proper navigation (works with HashRouter)
+
   const handleNotificationClick = () => {
     navigate('/notifications')
   }

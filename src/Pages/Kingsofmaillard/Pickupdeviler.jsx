@@ -32,7 +32,7 @@ const HeroSection = () => {
   const [manuallyExpanded, setManuallyExpanded] = useState(new Set())
   const [branches, setBranches] = useState([])
 
-  // ✅ Enhanced filter logic - Search only areas, not governates
+
   const filteredGovernates = governates
     .map(gov => {
       const filteredAreas =
@@ -40,10 +40,10 @@ const HeroSection = () => {
           area.areaName.toLowerCase().includes(searchQuery.toLowerCase())
         ) || []
 
-      // Show all governates when no search, only matching ones during search
+
       const shouldShowGovernate = searchQuery
-        ? filteredAreas.length > 0 // During search: only show if has matching areas
-        : true // No search: show all governates
+        ? filteredAreas.length > 0
+        : true
 
       if (shouldShowGovernate) {
         return {
@@ -57,7 +57,7 @@ const HeroSection = () => {
     })
     .filter(Boolean)
 
-  //GetmanagementStatus
+
   const handlemanagementStatus = async () => {
     try {
       const { data } = await ApiService.get(`getmanagementByBrandId/${brandId}`)
@@ -94,7 +94,7 @@ const HeroSection = () => {
     }
   }
 
-  // Fetch all governates for the brand based on selected method
+
   const getAllGovernates = async () => {
     try {
       let response
@@ -120,7 +120,7 @@ const HeroSection = () => {
     }
   }
 
-  // Fetch areas for a given governate based on selected method
+
   const getAreasByGovernate = async governateId => {
     if (areasByGovernate[governateId]) return
 
@@ -172,7 +172,7 @@ const HeroSection = () => {
     }
   }, [brandId, selectedMethod, language])
 
-  // Auto-fetch areas for visible governates during search
+
   useEffect(() => {
     if (searchQuery && filteredGovernates.length > 0) {
       filteredGovernates.forEach(gov => {
@@ -193,7 +193,6 @@ const HeroSection = () => {
   }
 
   const handleGovernateClick = governate => {
-    // If clicking the same governate that's already expanded, collapse it
     if (expandedGovernateId === governate._id) {
       setExpandedGovernateId(null)
       setManuallyExpanded(prev => {
@@ -202,7 +201,6 @@ const HeroSection = () => {
         return newSet
       })
     } else {
-      // Expand the clicked governate
       setExpandedGovernateId(governate._id)
       setManuallyExpanded(prev => {
         const newSet = new Set(prev)
@@ -247,7 +245,7 @@ const HeroSection = () => {
     navigate('/')
   }
 
-  // Determine if areas should be shown for a governate
+
   const shouldShowAreas = gov => {
     const hasSearchMatches =
       searchQuery && gov.filteredAreas && gov.filteredAreas.length > 0
@@ -434,7 +432,6 @@ const HeroSection = () => {
         <div className='p-3 border-t border-gray-200 bg-white flex-shrink-0 sticky bottom-0'>
           <button
             onClick={handleStartOrdering}
-            // disabled={!selectedArea && !selectedGovernate}
             disabled={
               selectedMethod === 'delivery' ? !selectedArea : !selectedGovernate
             }

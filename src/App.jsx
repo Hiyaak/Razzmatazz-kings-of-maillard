@@ -77,7 +77,6 @@ function App () {
             <Route path='/usercheckout' element={<Usercheckout />} />
             <Route path='/notifications' element={<Getnotification />} />
             <Route path='/getAllPackages' element={<GetAllPackages />} />
-            {/* <Route path="/packagesdetails" element={<PackagesDetails />} /> */}
             <Route path='/package/:packageId' element={<PackagesDetails />} />
             <Route path='/order/:orderId' element={<Qrorder />} />
 
