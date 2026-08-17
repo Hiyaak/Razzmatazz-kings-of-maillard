@@ -41,7 +41,7 @@ const Myorders = () => {
           toast.success("Payment successful");
           clearCart();
         } else {
-          toast.error("Payment timed out. try again");
+          toast.error("Payment timed out. Please try again");
         }
 
         await getOrders();
