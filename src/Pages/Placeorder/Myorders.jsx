@@ -295,7 +295,7 @@ const Myorders = () => {
     return (
       <div className="flex flex-col md:flex-row min-h-screen">
         <div className="w-full md:w-[42%] h-screen border-r border-gray-200 flex items-center justify-center">
-          <p className="text-gray-500">Loading orders...</p>
+          <p className="text-gray-500">Loading order...</p>
         </div>
         <RightPanelLayout />
       </div>
