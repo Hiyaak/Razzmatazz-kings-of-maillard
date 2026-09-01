@@ -21,64 +21,193 @@ const Userprofile = () => {
   const [userAdress, setUserAdress] = useState([])
   const [showAddressModal, setShowAddressModal] = useState(false)
 
+  // ✅ NEW STATES FOR DELETE MODAL
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [deleteConfirmText, setDeleteConfirmText] = useState('')
 
   const navigate = useNavigate()
-  const storedBrandId = localStorage.getItem('brandId')
-  const guestUserId = sessionStorage.getItem(`guestUserId_${storedBrandId}`)
-  const registredUserId = localStorage.getItem(
-    `registredUserId_${storedBrandId}`
-  )
+  // const storedBrandId = localStorage.getItem('brandId')
+  // const guestUserId = sessionStorage.getItem(`guestUserId_${storedBrandId}`)
+  // const registredUserId = localStorage.getItem(
+  //   `registredUserId_${storedBrandId}`
+  // )
 
-  const userId = registredUserId || guestUserId
+  const storedBrandId = localStorage.getItem("brandId");
+
+const registredUserId = storedBrandId
+  ? localStorage.getItem(
+      `registredUserId_${storedBrandId}`
+    )
+  : null;
+
+const guestUserId = storedBrandId
+  ? sessionStorage.getItem(
+      `guestUserId_${storedBrandId}`
+    )
+  : null;
+
+const guestUserData = storedBrandId
+  ? JSON.parse(
+      sessionStorage.getItem(
+        `guestUserData_${storedBrandId}`
+      ) || "null"
+    )
+  : null;
+
+const userId =
+  registredUserId || guestUserId;
+
+const isGuest =
+  !registredUserId && !!guestUserId;
+
+  // const userId = registredUserId || guestUserId
+
+  // const fetchProfile = async () => {
+  //   if (!userId) {
+  //     toast.error('User not found. Please log in again.')
+  //     navigate('/profile')
+  //     return
+  //   }
+  //   try {
+  //     const payload = { id: userId }
+  //     const { data } = await ApiService.post('getProfileById', payload)
+  //     if (data.status) {
+  //       setProfile(data.profile)
+  //     } else {
+  //       toast.error(data.message || 'Failed to load profile.')
+  //     }
+  //   } catch (error) {
+  //     console.error('Error fetching profile:', error)
+  //     toast.error('Something went wrong while loading your profile.')
+  //   }
+  // }
 
   const fetchProfile = async () => {
-    if (!userId) {
-      toast.error('User not found. Please log in again.')
-      navigate('/profile')
-      return
-    }
-    try {
-      const payload = { id: userId }
-      const { data } = await ApiService.post('getProfileById', payload)
-      if (data.status) {
-        setProfile(data.profile)
-      } else {
-        toast.error(data.message || 'Failed to load profile.')
-      }
-    } catch (error) {
-      console.error('Error fetching profile:', error)
-      toast.error('Something went wrong while loading your profile.')
-    }
+  if (!userId) {
+    setProfile(null);
+    return;
   }
 
-  const fetchAdress = async () => {
-    try {
-      const { data } = await ApiService.get(`getAddressesByUser/${userId}`)
-      if (data.status) {
-        setUserAdress(data.addresses)
-      } else {
-        toast.error('Failed to load adress')
-      }
-    } catch (error) {
-      console.error('Error fetching profile:', error)
-      toast.error('Something went wrong while loading your profile.')
+  // Guest user
+  if (isGuest) {
+    if (guestUserData) {
+      setProfile(guestUserData);
+    } else {
+      setProfile({
+        name: "Guest User",
+        email: "",
+        mobileNumber: "",
+      });
     }
+
+    return;
   }
+
+  // Normal user
+  try {
+    const payload = {
+      id: userId,
+    };
+
+    const { data } = await ApiService.post(
+      "getProfileById",
+      payload
+    );
+
+    if (data.status) {
+      setProfile(data.profile);
+    } else {
+      toast.error(
+        data.message || "Failed to load profile."
+      );
+    }
+  } catch (error) {
+    console.error("Error fetching profile:", error);
+    toast.error(
+      "Something went wrong while loading your profile."
+    );
+  }
+};
+
+  // const fetchAdress = async () => {
+  //   try {
+  //     const { data } = await ApiService.get(`getAddressesByUser/${userId}`)
+  //     if (data.status) {
+  //       setUserAdress(data.addresses)
+  //     } else {
+  //       toast.error('Failed to load adress')
+  //     }
+  //   } catch (error) {
+  //     console.error('Error fetching profile:', error)
+  //     toast.error('Something went wrong while loading your profile.')
+  //   }
+  // }
+
+  const fetchAdress = async () => {
+  if (isGuest || !userId) {
+    setUserAdress([]);
+    return;
+  }
+
+  try {
+    const { data } = await ApiService.get(
+      `getAddressesByUser/${userId}`
+    );
+
+    if (data.status) {
+      setUserAdress(data.addresses || []);
+    } else {
+      toast.error("Failed to load address");
+    }
+  } catch (error) {
+    console.error("Error fetching addresses:", error);
+    toast.error(
+      "Something went wrong while loading your addresses."
+    );
+  }
+};
 
   useEffect(() => {
     fetchProfile()
     fetchAdress()
   }, [language])
 
+  // const handleSignOut = () => {
+  //   const storedBrandId = localStorage.getItem('brandId')
+  //   if (storedBrandId) {
+  //     localStorage.removeItem(`registredUserId_${storedBrandId}`)
+  //   }
+  //   navigate('/')
+  // }
+
   const handleSignOut = () => {
-    const storedBrandId = localStorage.getItem('brandId')
-    if (storedBrandId) {
-      localStorage.removeItem(`registredUserId_${storedBrandId}`)
-    }
-    navigate('/')
+  const storedBrandId =
+    localStorage.getItem("brandId");
+
+  if (storedBrandId) {
+    // Remove normal user
+    localStorage.removeItem(
+      `registredUserId_${storedBrandId}`
+    );
+
+    // Remove guest user
+    sessionStorage.removeItem(
+      `guestUserId_${storedBrandId}`
+    );
+
+    // Remove guest user data
+    sessionStorage.removeItem(
+      `guestUserData_${storedBrandId}`
+    );
   }
+
+  setProfile(null);
+  setUserAdress([]);
+
+  toast.success("Signed out successfully");
+
+  navigate("/");
+};
 
   const handleEditProfile = () => {
     navigate('/usercheckout', { state: { profile } })
@@ -98,30 +227,92 @@ const Userprofile = () => {
     }
   }
 
+  //  FIXED VERSION — deletes user & clears entire localStorage
+  // const handleAccountDelete = async () => {
+  //   if (deleteConfirmText !== 'Delete') return
 
-  const handleAccountDelete = async () => {
-    if (deleteConfirmText !== 'Delete') return
+  //   try {
+  //     const { data } = await ApiService.delete(`deleteUser/${userId}`, {
+  //       headers: { 'Content-Type': 'application/json' }
+  //     })
 
-    try {
-      const { data } = await ApiService.delete(`deleteUser/${userId}`, {
-        headers: { 'Content-Type': 'application/json' }
-      })
+  //     if (data.status) {
+  //       toast.success('Account deleted successfully!')
 
-      if (data.status) {
-        toast.success('Account deleted successfully!')
+  //       // ✅ Clear ALL local storage data
+  //       localStorage.clear()
 
-        localStorage.clear()
+  //       // ✅ Redirect to home page
+  //       navigate('/')
+  //     } else {
+  //       toast.error(data.message || 'Failed to delete account')
+  //     }
+  //   } catch (error) {
+  //     console.error('Error deleting account:', error)
+  //     toast.error('Something went wrong while deleting your account.')
+  //   }
+  // }
+const handleAccountDelete = async () => {
+  if (deleteConfirmText !== "Delete") return;
 
-        navigate('/')
-      } else {
-        toast.error(data.message || 'Failed to delete account')
+  try {
+    const { data } = await ApiService.delete(
+      `deleteUser/${userId}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
       }
-    } catch (error) {
-      console.error('Error deleting account:', error)
-      toast.error('Something went wrong while deleting your account.')
-    }
-  }
+    );
 
+    if (data.status) {
+      toast.success("Account deleted successfully!");
+
+      // Get brand ID BEFORE clearing anything
+      const storedBrandId =
+        localStorage.getItem("brandId");
+
+      // Remove only user/session-related data
+      if (storedBrandId) {
+        localStorage.removeItem(
+          `registredUserId_${storedBrandId}`
+        );
+
+        sessionStorage.removeItem(
+          `guestUserId_${storedBrandId}`
+        );
+
+        sessionStorage.removeItem(
+          `guestUserData_${storedBrandId}`
+        );
+      }
+
+      // Clear profile state
+      setProfile(null);
+      setUserAdress([]);
+
+      // Reset delete modal
+      setDeleteConfirmText("");
+      setShowDeleteModal(false);
+
+      // Go to home
+      navigate("/");
+    } else {
+      toast.error(
+        data.message || "Failed to delete account"
+      );
+    }
+  } catch (error) {
+    console.error(
+      "Error deleting account:",
+      error
+    );
+
+    toast.error(
+      "Something went wrong while deleting your account."
+    );
+  }
+};
   const menuItems = [
     {
       icon: <FaShoppingCart className='w-5 h-5 text-gray-600 font-semibold' />,
@@ -147,7 +338,7 @@ const Userprofile = () => {
       icon: <MdDelete className='w-5 h-5 text-[#FA0303]' />,
       label: t('profile.Delete account'),
       isDelete: true,
-      onClick: () => setShowDeleteModal(true)
+      onClick: () => setShowDeleteModal(true) // ✅ OPEN MODAL
     }
   ]
 

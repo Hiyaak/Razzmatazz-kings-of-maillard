@@ -7,6 +7,21 @@
 /* Global default font */
 body {
   font-family: 'Quicksand', sans-serif;
+  min-width: 0;
+  overflow-x: hidden;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+@media (max-width: 767px) {
+  .h-screen {
+    height: auto;
+    min-height: 100dvh;
+  }
 }
 
 /* Slide-in from left animation */

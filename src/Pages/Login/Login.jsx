@@ -30,25 +30,75 @@ const ContactInfoForm = () => {
     }))
   }
 
+  // const handleGuestlogin = async () => {
+  //   try {
+  //     const payload = {
+  //       name: formData.name,
+  //       email: formData.email,
+  //       phone: formData.phone,
+  //       brandId: storedBrandId
+  //     }
+  //     const { data } = await ApiService.post('guestUser', payload)
+  //     if (data.status) {
+  //       sessionStorage.setItem(`guestUserId_${storedBrandId}`, data.user._id)
+  //       toast.success('Guest login successful!')
+  //       navigate('/shoopingcart')
+  //     } else {
+  //     }
+  //   } catch (error) {
+  //     toast.error('Something went wrong during login. Please try again.')
+  //   }
+  // }
+
   const handleGuestlogin = async () => {
-    try {
-      const payload = {
-        name: formData.name,
-        email: formData.email,
-        phone: formData.phone,
-        brandId: storedBrandId
-      }
-      const { data } = await ApiService.post('guestUser', payload)
-      if (data.status) {
-        sessionStorage.setItem(`guestUserId_${storedBrandId}`, data.user._id)
-        toast.success('Guest login successful!')
-        navigate('/shoopingcart')
-      } else {
-      }
-    } catch (error) {
-      toast.error('Something went wrong during login. Please try again.')
+  try {
+    const payload = {
+      name: formData.name,
+      email: formData.email,
+      phone: formData.phone,
+      brandId: storedBrandId,
+    };
+
+    const { data } = await ApiService.post("guestUser", payload);
+
+    if (data.status) {
+      sessionStorage.setItem(
+        `guestUserId_${storedBrandId}`,
+        data.user._id
+      );
+
+      sessionStorage.setItem(
+        `guestUserData_${storedBrandId}`,
+        JSON.stringify({
+          _id: data.user._id,
+          name: data.user.name || formData.name,
+          email: data.user.email || formData.email,
+          mobileNumber:
+            data.user.mobileNumber ||
+            data.user.phone ||
+            formData.phone,
+        })
+      );
+
+      // Remove normal user session
+      localStorage.removeItem(
+        `registredUserId_${storedBrandId}`
+      );
+
+      toast.success("Guest login successful!");
+      navigate("/shoopingcart");
+    } else {
+      toast.error(
+        data.message || "Guest login failed"
+      );
     }
+  } catch (error) {
+    console.error("Guest login error:", error);
+    toast.error(
+      "Something went wrong during login. Please try again."
+    );
   }
+};
 
   const handleSignUp = () => {
     navigate('/profile')
@@ -86,6 +136,7 @@ const ContactInfoForm = () => {
         {/* Content Area */}
         <div className='flex-1 flex flex-col items-center justify-start px-6 py-8 md:py-12'>
           {!showGuestForm ? (
+            // Initial View - Benefits and Buttons
             <>
               <div className='w-full max-w-md mx-auto'>
                 {/* Icon */}
@@ -173,6 +224,7 @@ const ContactInfoForm = () => {
               </div>
             </>
           ) : (
+            // Guest Form View - Only Input Fields
             <>
               <div className='w-full max-w-md'>
                 {/* Icon */}
