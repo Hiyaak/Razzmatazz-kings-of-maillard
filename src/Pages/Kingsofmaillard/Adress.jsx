@@ -44,7 +44,11 @@ const Adress = () => {
     )
     console.log('Selected Location Data:', storedData)
     setLocationData(storedData)
-  }, [storedBrandId])
+
+    if (storedData.selectedMethod === 'pickup') {
+      navigate('/placeorder', { replace: true })
+    }
+  }, [storedBrandId, navigate])
 
   const userId = registredUserId || guestUserId
 

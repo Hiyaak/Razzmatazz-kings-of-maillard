@@ -10,6 +10,7 @@ import {
   Globe,
   Type
 } from 'lucide-react'
+import { FaTiktok } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
 import heroImage from '../../assets/concept.jpg'
 import CateringImage from '../../assets/catering.jpg'
@@ -377,11 +378,28 @@ const FoodDeliveryApp = () => {
             </div>
           </nav>
 
-          {/* Instagram Floating Button */}
-          <div className='absolute top-1/3 right-0 z-20 transform -translate-y-1/2'>
-            <div className='w-12 h-12 bg-gradient-to-br from-purple-500 via-pink-500 to-orange-500 rounded-lg flex items-center justify-center text-white font-bold text-sm'>
-              <Instagram className='w-6 h-6 text-white' />
-            </div>
+          <div className='absolute top-1/3 right-0 z-20 transform -translate-y-1/2 flex flex-col items-center gap-2'>
+            <a
+              href='https://www.instagram.com/kingsofmaillard?utm_source=ig_web_button_share_sheet&igsi=ZDNlZDc0MzIxNw%3D%3D'
+              target='_blank'
+              rel='noopener noreferrer'
+              className='block'
+            >
+              <div className='w-12 h-12 bg-gradient-to-br from-purple-500 via-pink-500 to-orange-500 rounded-lg flex items-center justify-center text-white'>
+                <Instagram className='w-6 h-6 text-white' />
+              </div>
+            </a>
+
+            <a
+              href='https://www.instagram.com/bftpkw?utm_source=ig_web_button_share_sheet&igsi=ZDNlZDc0MzIxNw%3D%3D'
+              target='_blank'
+              rel='noopener noreferrer'
+              className='block'
+            >
+              <div className='w-12 h-12 bg-black rounded-lg flex items-center justify-center text-white'>
+                <FaTiktok className='w-6 h-6' />
+              </div>
+            </a>
           </div>
 
           {/* Scrollable Content Below Header */}

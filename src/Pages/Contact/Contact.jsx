@@ -8,8 +8,10 @@ import {
   Instagram,
   Phone,
   Mail,
-  ChevronLeft
+  ChevronLeft,
+  MapPin
 } from 'lucide-react'
+import { FaTiktok } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
 
 import ApiService from '../../Services/Apiservice'
@@ -143,6 +145,14 @@ const Contact = () => {
     ))
   }
 
+  const openMapUrl = (location, event) => {
+    event.stopPropagation()
+
+    if (location?.url) {
+      window.open(location.url, '_blank', 'noopener,noreferrer')
+    }
+  }
+
   const timeAgo = date => {
     const seconds = Math.floor((new Date() - new Date(date)) / 1000)
     const intervals = {
@@ -193,8 +203,9 @@ const Contact = () => {
                   onClick={() =>
                     navigate('/branddetails', {
                       state: {
-                        brandId: brandId,
-                        locationName: loc.locname
+                        brandId: loc.brandId || brandId,
+                        locationName: loc.locname,
+                        mapsUrl: loc.url
                       }
                     })
                   }
@@ -207,10 +218,13 @@ const Contact = () => {
                     <span className='text-gray-800 relative z-10'>
                       {loc.locname}
                     </span>
-                    <button className='p-2 text-gray-400 hover:text-gray-600 relative z-10'>
-                      <div className='w-5 h-5 rounded-full border-2 border-gray-400 flex items-center justify-center'>
-                        <span className='text-xs'>?</span>
-                      </div>
+                    <button
+                      type='button'
+                      onClick={event => openMapUrl(loc, event)}
+                      className='p-2 text-[#FA0303] hover:text-red-700 relative z-10'
+                      aria-label='Open in maps'
+                    >
+                      <MapPin className='w-5 h-5' />
                     </button>
                   </div>
                 </div>
@@ -358,12 +372,28 @@ const Contact = () => {
             <h2 className='px-4 py-3 text-sm font-medium text-gray-700 bg-gray-100'>
               {t('Contact.connectwithus')}
             </h2>
-            <div className='px-4 py-6 flex justify-center gap-16 md:gap-16 lg:gap-28 border-t border-b'>
-              <button className='p-3 hover:bg-gray-50 rounded-lg transition-colors'>
+            <div className='px-4 py-6 flex justify-center items-center gap-16 md:gap-16 lg:gap-28 border-t border-b'>
+              <a
+                href='https://www.instagram.com/kingsofmaillard?utm_source=ig_web_button_share_sheet&igsi=ZDNlZDc0MzIxNw%3D%3D'
+                target='_blank'
+                rel='noopener noreferrer'
+                className='p-3 hover:bg-gray-50 rounded-lg transition-colors'
+              >
                 <div className='w-12 h-12 bg-gradient-to-br from-purple-500 via-pink-500 to-orange-500 rounded-lg flex items-center justify-center'>
                   <Instagram className='w-6 h-6 text-white' />
                 </div>
-              </button>
+              </a>
+
+              <a
+                href='https://www.instagram.com/bftpkw?utm_source=ig_web_button_share_sheet&igsi=ZDNlZDc0MzIxNw%3D%3D'
+                target='_blank'
+                rel='noopener noreferrer'
+                className='p-3 hover:bg-gray-50 rounded-lg transition-colors'
+              >
+                <div className='w-12 h-12 bg-black rounded-lg flex items-center justify-center'>
+                  <FaTiktok className='w-6 h-6 text-white' />
+                </div>
+              </a>
               <button className='p-3 hover:bg-gray-50 rounded-lg transition-colors'>
                 <div className='w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center'>
                   <Phone className='w-6 h-6 text-white' />

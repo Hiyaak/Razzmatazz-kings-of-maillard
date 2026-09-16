@@ -12,6 +12,7 @@ import ApiService, { ImagePath } from '../../Services/Apiservice'
 import RightPanelLayout from '../../Layout/RightPanelLayout'
 import { RiShoppingBasketLine } from 'react-icons/ri'
 import { useTranslation } from 'react-i18next'
+import { toast } from 'react-toastify'
 
 const ShoppingCartPage = () => {
   const navigate = useNavigate()
@@ -49,6 +50,15 @@ const ShoppingCartPage = () => {
     }
 
     const userId = registredUserId || guestUserId
+
+    if (selectedMethod === 'pickup') {
+      navigate('/placeorder', {
+        state: {
+          specialRemark: specialRemark
+        }
+      })
+      return
+    }
 
     try {
       const { data } = await ApiService.get(`getAddressesByUser/${userId}`)

@@ -4,6 +4,7 @@ import { Menu, Search, BellMinus, Languages, Globe, Type } from 'lucide-react'
 import heroImage from '../assets/kings.jpg'
 import { Instagram } from 'lucide-react'
 import { RiShoppingBagLine } from 'react-icons/ri'
+import { FaTiktok } from 'react-icons/fa'
 import { LanguageContext } from '../Context/LanguageContext'
 
 const RightPanelLayout = () => {
@@ -76,11 +77,28 @@ const RightPanelLayout = () => {
           className='w-full h-full object-cover'
         />
 
-        {/* Bottom IG button */}
-        <div className='absolute top-1/2 right-0 z-20 transform -translate-y-1/2'>
-          <div className='w-12 h-12 bg-gradient-to-br from-purple-500 via-pink-500 to-orange-500 rounded-lg flex items-center justify-center text-white'>
-            <Instagram className='w-6 h-6' />
-          </div>
+        <div className='absolute top-1/2 right-0 z-20 transform -translate-y-1/2 flex flex-col items-center gap-2'>
+          <a
+            href='https://www.instagram.com/kingsofmaillard?utm_source=ig_web_button_share_sheet&igsi=ZDNlZDc0MzIxNw%3D%3D'
+            target='_blank'
+            rel='noopener noreferrer'
+            className='block'
+          >
+            <div className='w-12 h-12 bg-gradient-to-br from-purple-500 via-pink-500 to-orange-500 rounded-lg flex items-center justify-center text-white'>
+              <Instagram className='w-6 h-6' />
+            </div>
+          </a>
+
+          <a
+            href='https://www.instagram.com/bftpkw?utm_source=ig_web_button_share_sheet&igsi=ZDNlZDc0MzIxNw%3D%3D'
+            target='_blank'
+            rel='noopener noreferrer'
+            className='block'
+          >
+            <div className='w-12 h-12 bg-black rounded-lg flex items-center justify-center text-white'>
+              <FaTiktok className='w-6 h-6' />
+            </div>
+          </a>
         </div>
       </div>
     </div>

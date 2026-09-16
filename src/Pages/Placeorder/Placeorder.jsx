@@ -128,6 +128,11 @@ const Placeorder = () => {
   // };
 
   const handleAdress = () => {
+    if (selectedMethod === 'pickup') {
+      navigate('/pickupdeviler')
+      return
+    }
+
     const selectedAddressObj = userAdress.find(
       (addr) => addr._id === selectedAddress,
     );
@@ -411,7 +416,9 @@ const Placeorder = () => {
   };
 
   useEffect(() => {
-    fetchAdress();
+    if (selectedMethod === "delivery") {
+      fetchAdress();
+    }
     fetchProfile();
     getDeliveryCharges();
     fetchSettings();
@@ -692,6 +699,11 @@ const Placeorder = () => {
     // ==========================================
 
     if (selectedMethod === "delivery") {
+      if (!selectedAddress) {
+        toast.error("Please add a delivery address");
+        return;
+      }
+
       payload.address_id = selectedAddress;
 
       payload.governateId =
@@ -1409,7 +1421,7 @@ const Placeorder = () => {
             </span>
           </div>
 
-          {!isCatering && (
+          {!isCatering && selectedMethod === "delivery" && (
             <div className="flex justify-between text-gray-800">
               <span>{t("PlaceOrder.Delivery Services")}</span>
               <span>

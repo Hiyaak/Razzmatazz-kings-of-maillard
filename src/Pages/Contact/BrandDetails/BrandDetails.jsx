@@ -10,45 +10,75 @@ const BrabdDetails = () => {
   const { t } = useTranslation()
   const { language } = useContext(LanguageContext)
   const [brandDetails, setBrandDetails] = useState(null)
+  const [locationUrl, setLocationUrl] = useState('')
   const navigate = useNavigate()
   const { state } = useLocation()
 
   useEffect(() => {
     if (state?.brandId && state?.locationName) {
-      console.log('Selected Location Name:', state.locationName)
       fetchBrandAddress(state.brandId, state.locationName)
+    }
+
+    if (state?.mapsUrl) {
+      setLocationUrl(state.mapsUrl)
+    } else if (state?.locationName) {
+      fetchLocationUrl(state.locationName)
     }
   }, [state])
 
   const fetchBrandAddress = async (brandId, locationName) => {
     try {
       const { data } = await ApiService.get(
-        `getBrandAddressByBrandAndLocationName/${brandId}/${locationName}`
+        `getBrandAddressByBrandAndLocationName/${brandId}/${encodeURIComponent(locationName)}`
       )
       if (data.success && data.data) {
         setBrandDetails(data.data)
-        console.log('Brand Details:', data.data)
-      } else {
-        console.log('No branch details found')
       }
     } catch (error) {
       console.log('Error fetching brand details:', error)
     }
   }
 
+  const fetchLocationUrl = async locationName => {
+    try {
+      const { data } = await ApiService.get(
+        `getLocationsByBrand?brandName=${encodeURIComponent('Kings of Maillard')}`
+      )
+
+      const location = data.locations?.find(loc => loc.locname === locationName)
+
+      if (location?.url) {
+        setLocationUrl(location.url)
+      }
+    } catch (error) {
+      console.log('Error fetching location url:', error)
+    }
+  }
+
   const handleBack = () => navigate('/contact')
 
+  const getMapsUrl = () =>
+    state?.mapsUrl || brandDetails?.url || locationUrl
+
   const handleDirections = () => {
+    const mapsUrl = getMapsUrl()
+
+    if (mapsUrl) {
+      window.open(mapsUrl, '_blank', 'noopener,noreferrer')
+      return
+    }
+
     if (brandDetails?.address) {
       const query = encodeURIComponent(brandDetails.address)
       window.open(
         `https://www.google.com/maps/search/?api=1&query=${query}`,
-        '_blank'
+        '_blank',
+        'noopener,noreferrer'
       )
-    } else {
-      console.log('No address available for directions')
     }
   }
+
+  const mapsUrl = getMapsUrl()
 
   return (
     <div className='flex h-screen overflow-hidden'>
@@ -104,15 +134,29 @@ const BrabdDetails = () => {
                   <span className='text-gray-900 font-semibold'>
                     {t('brand.Get Directions')}
                   </span>
-                  <button
-                    onClick={handleDirections}
-                    className='flex items-center text-gray-700 hover:text-red-600 transition-colors'
-                  >
+                  <div className='flex items-center'>
                     <span className='mr-2 text-sm'>
                       {state?.locationName || 'N/A'}
                     </span>
-                    <MapPin className='w-4 h-4 text-[#FA0303]' />
-                  </button>
+                    {mapsUrl ? (
+                      <a
+                        href={mapsUrl}
+                        target='_blank'
+                        rel='noopener noreferrer'
+                        aria-label='Open in maps'
+                      >
+                        <MapPin className='w-4 h-4 text-[#FA0303]' />
+                      </a>
+                    ) : (
+                      <button
+                        type='button'
+                        onClick={handleDirections}
+                        aria-label='Open in maps'
+                      >
+                        <MapPin className='w-4 h-4 text-[#FA0303]' />
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
@@ -123,8 +167,27 @@ const BrabdDetails = () => {
             <div className='bg-gray-100 p-3 -mx-3 -mt-3 mb-3 border-b'>
               <h2 className='text-base font-semibold text-gray-500'>{t('brand.Address')}</h2>
             </div>
-            <div className='flex items-start'>
-              <MapPin className='w-5 h-5 text-[#FA0303] mr-2 mt-0.5 flex-shrink-0' />
+            <div className='flex items-start -mx-3 px-3 py-1 rounded-md'>
+              {mapsUrl ? (
+                <a
+                  href={mapsUrl}
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  className='mr-2 mt-0.5 flex-shrink-0'
+                  aria-label='Open in maps'
+                >
+                  <MapPin className='w-5 h-5 text-[#FA0303]' />
+                </a>
+              ) : (
+                <button
+                  type='button'
+                  onClick={handleDirections}
+                  className='mr-2 mt-0.5 flex-shrink-0'
+                  aria-label='Open in maps'
+                >
+                  <MapPin className='w-5 h-5 text-[#FA0303]' />
+                </button>
+              )}
               <div className='px-2'>
                 <h3 className='font-semibold text-gray-800 text-md'>
                   {state?.locationName || 'Branch'}

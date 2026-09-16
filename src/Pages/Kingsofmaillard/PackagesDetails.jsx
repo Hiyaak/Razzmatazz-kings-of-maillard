@@ -193,6 +193,41 @@ const PackageDetails = () => {
     cat => cat.name === 'Additional Services'
   )
 
+  const selectedOptionsTotal = (packageData?.package?.categories || []).reduce(
+    (total, category) => {
+      if (category.name === 'Additional Services') return total
+
+      const selected = selectedOptions[category.id]
+      if (selected === undefined) return total
+
+      if (category.items?.[0]?.isYesNoType) {
+        const yesNoItem = category.items[0]
+        const isSelected =
+          selected === true ||
+          selected === 'true' ||
+          selected === 1 ||
+          selected === '1' ||
+          selected === 'Yes' ||
+          selected === 'yes'
+
+        return total + (isSelected ? Number(yesNoItem.price || 0) : 0)
+      }
+
+      if (Array.isArray(selected)) {
+        return (
+          total +
+          category.items
+            .filter(item => selected.includes(item.id))
+            .reduce((sum, item) => sum + Number(item.price || 0), 0)
+        )
+      }
+
+      const selectedItem = category.items?.find(item => item.id === selected)
+      return total + Number(selectedItem?.price || 0)
+    },
+    0
+  )
+
   const additionalTotal = Object.entries(selectedItems).reduce(
     (total, [itemId, qty]) => {
       const item = additionalCategory?.items?.find(i => i.id === itemId)
@@ -205,7 +240,8 @@ const PackageDetails = () => {
 
   const extraPersonsTotal = extraPersons * extraPersonPrice
 
-  const finalTotal = basePrice + additionalTotal + extraPersonsTotal
+  const finalTotal =
+    basePrice + selectedOptionsTotal + additionalTotal + extraPersonsTotal
 
   const formatDateOnly = date => {
     if (!date) return null
